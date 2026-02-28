@@ -1905,6 +1905,22 @@ static MenuItemHandlerResult menuhandlerVanillaMode(s32 operation, struct menuit
 	return 0;
 }
 
+static MenuItemHandlerResult menuhandlerUbiDoobyAdsMove(s32 operation, struct menuitem *item, union handlerdata *data)
+{
+	switch (operation) {
+	case MENUOP_GET:
+		return g_UbiDoobyAdsMoveEnabled;
+	case MENUOP_SET:
+		g_UbiDoobyAdsMoveEnabled = data->checkbox.value;
+		if (g_UbiDoobyAdsMoveEnabled) {
+			g_PlayerExtCfg[g_ExtMenuPlayer].mouseaimmode = MOUSEAIM_LOCKED;
+		}
+		break;
+	}
+
+	return 0;
+}
+
 struct menuitem g_UbiDoobyVanillaModeMenuItems[] = {
 	{
 		MENUITEMTYPE_CHECKBOX,
@@ -1966,6 +1982,22 @@ struct menuitem g_UbiDoobyMenuItems[] = {
 		(uintptr_t)"Vanilla Mode\n",
 		0,
 		(void *)&g_UbiDoobyVanillaModeMenuDialog,
+	},
+	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"ADS Move While Aiming\n",
+		0,
+		menuhandlerUbiDoobyAdsMove,
+	},
+	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Mouse Aim Lock (Recommended)\n",
+		0,
+		menuhandlerMouseAimLock,
 	},
 	{
 		MENUITEMTYPE_LABEL,
