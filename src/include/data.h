@@ -555,6 +555,7 @@ extern s32 g_BlurFbCapTimer;
 extern bool g_BlurFbDirty;
 extern s32 g_TickRateDiv;
 extern s32 g_TickExtraSleep;
+extern s32 g_UbiDoobyModsEnabled;
 extern s32 g_UbiDoobyVanillaMode;
 extern s32 g_MusicDisableMpDeath;
 extern s32 g_BgunGeMuzzleFlashes;
@@ -568,6 +569,8 @@ extern s16 g_MpCurrentSetup;
 
 #define PLAYER_EXTCFG() g_PlayerExtCfg[g_Vars.currentplayerstats->mpindex & 3]
 #define PLAYER_DEFAULT_FOV (PLAYER_EXTCFG().fovy)
+#define UBIB_ACTIVE ((g_UbiDoobyModsEnabled != 0) && (g_UbiDoobyVanillaMode == 0))
+#define UBIB_FEATURE_ON(x) (UBIB_ACTIVE && ((x) != 0))
 
 #define TEX_FILTER_2D g_TexFilter2D
 #define ADJUST_ZOOM_FOV(x) ((x) * PLAYER_EXTCFG().fovzoommult)
@@ -577,6 +580,8 @@ extern s16 g_MpCurrentSetup;
 #define TEX_FILTER_2D G_TF_BILERP
 #define ADJUST_ZOOM_FOV(x) (x)
 #define PLAYER_DEFAULT_FOV 60.f
+#define UBIB_ACTIVE (0)
+#define UBIB_FEATURE_ON(x) (0)
 
 #endif // PLATFORM_N64
 
