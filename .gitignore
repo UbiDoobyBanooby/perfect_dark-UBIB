@@ -2,6 +2,7 @@
 *.pyc
 *.dll
 *.exe
+.DS_Store
 pd.*.z64
 build
 .flatpak-builder
