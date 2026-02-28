@@ -37,6 +37,7 @@ u8 g_VmShowStats = 0;
 
 s32 g_TickRateDiv = 1;
 s32 g_TickExtraSleep = true;
+s32 g_UbiDoobyModsEnabled = true;
 s32 g_UbiDoobyVanillaMode = false;
 
 s32 g_SkipIntro = false;
@@ -167,6 +168,7 @@ PD_CONSTRUCTOR static void gameConfigInit(void)
 	configRegisterFloat("Game.ScreenShakeIntensity", &g_ViShakeIntensityMult, 0.f, 10.f);
 	configRegisterInt("Game.TickRateDivisor", &g_TickRateDiv, 0, 10);
 	configRegisterInt("Game.ExtraSleep", &g_TickExtraSleep, 0, 1);
+	configRegisterInt("Game.UbiDooby.ModsEnabled", &g_UbiDoobyModsEnabled, 0, 1);
 	configRegisterInt("Game.UbiDooby.VanillaMode", &g_UbiDoobyVanillaMode, 0, 1);
 	configRegisterInt("Game.SkipIntro", &g_SkipIntro, 0, 1);
 	configRegisterInt("Game.DisableMpDeathMusic", &g_MusicDisableMpDeath, 0, 1);
