@@ -335,3 +335,8 @@ void optionsSetMusicVolume(u16 volume)
 	musicSetVolume(var8008231cnb);
 #endif
 }
+
+bool optionsIsVanillaModeEnabled(void)
+{
+	return g_UbiDoobyVanillaMode != 0;
+}

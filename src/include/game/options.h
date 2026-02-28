@@ -46,5 +46,6 @@ u8 optionsGetScreenSplit(void);
 void optionsSetScreenSplit(u8 split);
 u16 optionsGetMusicVolume(void);
 void optionsSetMusicVolume(u16 volume);
+bool optionsIsVanillaModeEnabled(void);
 
 #endif
