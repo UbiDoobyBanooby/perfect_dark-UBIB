@@ -4,6 +4,11 @@
 *.exe
 pd.*.z64
 build
+build*/
+cmake-build-*/
+out/
+dist/
+*.log
 .flatpak-builder
 extracted
 src/assets/*/*.bin
