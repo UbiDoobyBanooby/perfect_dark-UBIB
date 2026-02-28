@@ -1209,6 +1209,9 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 				movedata.disablelookahead = true;
 			} else {
 				// 1.x or PC control style
+#ifndef PLATFORM_N64
+				const bool ubibadsmove = UBIB_FEATURE_ON(g_UbiDoobyAdsMoveEnabled);
+#endif
 				if (controlmode == CONTROLMODE_PC) {
 					shootbuttons = Z_TRIG;
 					aimbuttons = R_TRIG;
@@ -1224,7 +1227,11 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 				}
 
 				if (controlmode == CONTROLMODE_PC) {
-					if (!g_Vars.currentplayer->insightaimmode) {
+					if (!g_Vars.currentplayer->insightaimmode
+#ifndef PLATFORM_N64
+							|| ubibadsmove
+#endif
+					) {
 						movedata.analogstrafe = c2stickx;
 						movedata.analogwalk = c2sticky;
 						movedata.unk14 = (c2stickx || c2sticky);
@@ -1280,9 +1287,19 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 						srmask = R_JPAD | R_CBUTTONS;
 					}
 
+#ifndef PLATFORM_N64
+					const bool pcadsmoveactive = (controlmode == CONTROLMODE_PC)
+						&& g_Vars.currentplayer->insightaimmode
+						&& ubibadsmove;
+#endif
+
 					if (controlmode == CONTROLMODE_12 || controlmode == CONTROLMODE_14 || controlmode == CONTROLMODE_PC) {
 						// Handle side stepping
-						if (g_Vars.currentplayer->insightaimmode == false) {
+						if (g_Vars.currentplayer->insightaimmode == false
+#ifndef PLATFORM_N64
+								|| (ubibadsmove && !pcadsmoveactive)
+#endif
+						) {
 							if (allowc1buttons) {
 								movedata.digitalstepleft = joyCountButtonsOnSpecificSamples(aimoffhist, contpad1, c1allowedbuttons & slmask);
 								movedata.digitalstepright = joyCountButtonsOnSpecificSamples(aimoffhist, contpad1, c1allowedbuttons & srmask);
@@ -1299,8 +1316,40 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 							}
 						}
 
-						movedata.digitalstepforward = !g_Vars.currentplayer->insightaimmode && (c1buttons & sumask);
-						movedata.digitalstepback = !g_Vars.currentplayer->insightaimmode && (c1buttons & sdmask);
+#ifndef PLATFORM_N64
+						if (pcadsmoveactive) {
+							movedata.digitalstepleft = false;
+							movedata.digitalstepright = false;
+							movedata.analogstrafe = c2stickx;
+
+							if (c1buttons & slmask) {
+								movedata.analogstrafe = -70.f;
+							}
+
+							if (c1buttons & srmask) {
+								movedata.analogstrafe = 70.f;
+							}
+
+							if (movedata.analogstrafe != 0.f) {
+								movedata.unk14 = true;
+							}
+						}
+#endif
+
+						movedata.digitalstepforward = (
+							(!g_Vars.currentplayer->insightaimmode
+#ifndef PLATFORM_N64
+								|| ubibadsmove
+#endif
+							) && (c1buttons & sumask)
+						);
+						movedata.digitalstepback = (
+							(!g_Vars.currentplayer->insightaimmode
+#ifndef PLATFORM_N64
+								|| ubibadsmove
+#endif
+							) && (c1buttons & sdmask)
+						);
 						movedata.canlookahead = (controlmode == CONTROLMODE_PC) && !g_Vars.currentplayer->insightaimmode && (c2stickx || c2sticky);
 						movedata.cannaturalpitch = !g_Vars.currentplayer->insightaimmode;
 						movedata.speedvertadown = 0;
@@ -1454,10 +1503,12 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 							for (i = 0; i < numsamples; i++) {
 #ifndef PLATFORM_N64
 								if (controlmode == CONTROLMODE_PC) {
-									if (joyGetButtonsPressedOnSample(i, contpad1, c1allowedbuttons & BUTTON_WPNFORWARD)) {
+									const bool usewheelforzoom = ubibadsmove && g_Vars.currentplayer->insightaimmode;
+
+									if (!usewheelforzoom && joyGetButtonsPressedOnSample(i, contpad1, c1allowedbuttons & BUTTON_WPNFORWARD)) {
 										movedata.weaponforwardoffset++;
 										g_Vars.currentplayer->invdowntime = -1;
-									} else if (joyGetButtonsPressedOnSample(i, contpad1, c1allowedbuttons & BUTTON_WPNBACK)) {
+									} else if (!usewheelforzoom && joyGetButtonsPressedOnSample(i, contpad1, c1allowedbuttons & BUTTON_WPNBACK)) {
 										movedata.weaponbackoffset++;
 										g_Vars.currentplayer->invdowntime = -1;
 									}
@@ -1638,6 +1689,14 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 						zoomout = c1buttons & sdmask;
 						zoomin = c1buttons & sumask;
 
+#ifndef PLATFORM_N64
+						if (controlmode == CONTROLMODE_PC && ubibadsmove) {
+							// Keep movement keys dedicated to movement while ADS.
+							zoomout = false;
+							zoomin = false;
+						}
+#endif
+
 						// @bug? Should this be HAND_RIGHT?
 						if (bgunGetWeaponNum(HAND_LEFT) == WEAPON_FARSIGHT) {
 							increment = 0.5f;
@@ -1653,7 +1712,18 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 
 #ifndef PLATFORM_N64
 						if (controlmode == CONTROLMODE_PC) {
-							if (c2sticky < 0) {
+							if (ubibadsmove) {
+								// Wheel-driven zoom tuning for ADS movement mode.
+								const f32 wheelfovstep = 5.5f;
+
+								if (inputKeyPressed(VK_MOUSE_WHEEL_UP)) {
+									movedata.zoominfovpersec = wheelfovstep;
+								}
+
+								if (inputKeyPressed(VK_MOUSE_WHEEL_DN)) {
+									movedata.zoomoutfovpersec = wheelfovstep;
+								}
+							} else if (c2sticky < 0) {
 								movedata.zoomoutfovpersec = -c2sticky / 70.0f;
 
 								if (movedata.zoomoutfovpersec > 1) {
@@ -1661,8 +1731,7 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 								}
 
 								movedata.zoomoutfovpersec = movedata.zoomoutfovpersec + movedata.zoomoutfovpersec;
-							}
-							if (c2sticky > 0) {
+							} else if (c2sticky > 0) {
 								movedata.zoominfovpersec = c2sticky / 70.0f;
 
 								if (movedata.zoominfovpersec > 1) {
@@ -1679,13 +1748,17 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 #ifdef PLATFORM_N64
 					if (allowc1buttons) {
 #else
-					if (allowc1buttons && (controlmode != CONTROLMODE_PC || (PLAYER_EXTCFG().crouchmode & CROUCHMODE_ANALOG))) {
+						if (allowc1buttons && (controlmode != CONTROLMODE_PC || (PLAYER_EXTCFG().crouchmode & CROUCHMODE_ANALOG))) {
 #endif
-						for (i = 0; i < numsamples; i++) {
-							if (!canmanualzoom && aimonhist[i]) {
-								bool goUp = joyGetButtonsPressedOnSample(i, contpad1, c1allowedbuttons & sumask);
-								if (controlmode == CONTROLMODE_PC) {
-									goUp = goUp || ((joyGetRStickYOnSample(i, contpad1) > 30 && joyGetRStickYOnSampleIndex(i, contpad1) <= 30));
+							for (i = 0; i < numsamples; i++) {
+								if (!canmanualzoom && aimonhist[i]
+#ifndef PLATFORM_N64
+										&& !pcadsmoveactive
+#endif
+								) {
+									bool goUp = joyGetButtonsPressedOnSample(i, contpad1, c1allowedbuttons & sumask);
+									if (controlmode == CONTROLMODE_PC) {
+										goUp = goUp || ((joyGetRStickYOnSample(i, contpad1) > 30 && joyGetRStickYOnSampleIndex(i, contpad1) <= 30));
 								}
 								if (goUp) {
 									if (movedata.crouchdown) {
@@ -1744,23 +1817,35 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 							&& joyGetButtons(contpad1, c1allowedbuttons & sdmask);
 					}
 
-					if (bgunGetWeaponNum(HAND_RIGHT) == WEAPON_FARSIGHT) {
-						movedata.farsighttempautoseek = g_Vars.currentplayer->insightaimmode && (c1buttons & (srmask | slmask));
-						if (controlmode == CONTROLMODE_PC && g_Vars.currentplayer->insightaimmode) {
-								movedata.unk14 = 1;
+						if (bgunGetWeaponNum(HAND_RIGHT) == WEAPON_FARSIGHT) {
+							movedata.farsighttempautoseek = g_Vars.currentplayer->insightaimmode && (c1buttons & (srmask | slmask));
+							if (controlmode == CONTROLMODE_PC && g_Vars.currentplayer->insightaimmode) {
+									movedata.unk14 = 1;
 #ifndef PLATFORM_N64
-								movedata.analogstrafe = c2stickx;
+									if (!pcadsmoveactive) {
+										movedata.analogstrafe = c2stickx;
+									}
+#endif
+							}
+						} else {
+							movedata.rleanleft = g_Vars.currentplayer->insightaimmode
+#ifndef PLATFORM_N64
+								&& !pcadsmoveactive
+#endif
+								&& (c1buttons & slmask);
+							movedata.rleanright = g_Vars.currentplayer->insightaimmode
+#ifndef PLATFORM_N64
+								&& !pcadsmoveactive
+#endif
+								&& (c1buttons & srmask);
+#ifndef PLATFORM_N64
+							if (controlmode == CONTROLMODE_PC && g_Vars.currentplayer->insightaimmode) {
+								if (!pcadsmoveactive) {
+									movedata.analoglean = c2stickx / 127.f;
+								}
+							}
 #endif
 						}
-					} else {
-						movedata.rleanleft = g_Vars.currentplayer->insightaimmode && (c1buttons & slmask);
-						movedata.rleanright = g_Vars.currentplayer->insightaimmode && (c1buttons & srmask);
-#ifndef PLATFORM_N64
-						if (controlmode == CONTROLMODE_PC && g_Vars.currentplayer->insightaimmode) {
-							movedata.analoglean = c2stickx / 127.f;
-						}
-#endif
-					}
 
 					// Handle mine detonation
 					if (controlmode != CONTROLMODE_PC) {
