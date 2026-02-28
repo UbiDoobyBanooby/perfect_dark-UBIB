@@ -33,23 +33,17 @@ void frametimeApply(s32 diffframe60, s32 diffframe240, s32 frametime)
 void frametimeCalculate(void)
 {
 	u32 count;
-	s32 diffframet;
-	s32 diffframe60;
-	s32 diffframe240;
-	s64 total60;
-	s64 total240;
+	u32 diffframet;
+	u32 diffframe60;
+	u32 diffframe240;
 
 	do {
 		count = osGetCount();
-		diffframet = (s32)(count - (u32)g_Vars.thisframestartt);
+		diffframet = count - g_Vars.thisframestartt;
 		g_Vars.diffframet = diffframet;
 
-		// Keep this in signed space: the carry terms can legitimately go negative.
-		total60 = (s64)g_Vars.lostframetime60t + diffframet + CYCLES_PER_FRAME / 2;
-		total240 = (s64)g_Vars.lostframetime240t + diffframet + CYCLES_PER_FRAME / 2 / 4;
-
-		diffframe60 = (s32)(total60 / CYCLES_PER_FRAME);
-		diffframe240 = (s32)(total240 / (CYCLES_PER_FRAME / 4));
+		diffframe60 = (g_Vars.lostframetime60t + diffframet + CYCLES_PER_FRAME / 2) / CYCLES_PER_FRAME;
+		diffframe240 = (g_Vars.lostframetime240t + diffframet + CYCLES_PER_FRAME / 2 / 4) / (CYCLES_PER_FRAME / 4);
 
 #ifndef PLATFORM_N64
 		if (g_TickExtraSleep) {
@@ -58,8 +52,8 @@ void frametimeCalculate(void)
 #endif
 	} while (g_Vars.mininc60 && diffframe60 < g_Vars.mininc60);
 
-	g_Vars.lostframetime60t = (s32)((s64)g_Vars.lostframetime60t + diffframet - (s64)diffframe60 * CYCLES_PER_FRAME);
-	g_Vars.lostframetime240t = (s32)((s64)g_Vars.lostframetime240t + diffframet - (s64)diffframe240 * (CYCLES_PER_FRAME / 4));
+	g_Vars.lostframetime60t = g_Vars.lostframetime60t + diffframet - diffframe60 * CYCLES_PER_FRAME;
+	g_Vars.lostframetime240t = g_Vars.lostframetime240t + diffframet - diffframe240 * (CYCLES_PER_FRAME / 4);
 
 #ifdef PLATFORM_N64
 	g_Vars.mininc60 = 1;
