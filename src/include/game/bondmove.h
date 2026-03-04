@@ -4,6 +4,10 @@
 #include "data.h"
 #include "types.h"
 
+#define BMOVE_WCLASS_LIGHT 0
+#define BMOVE_WCLASS_MEDIUM 1
+#define BMOVE_WCLASS_HEAVY 2
+
 void bmoveSetControlDef(u32 controldef);
 void bmoveSetAutoMoveCentreEnabled(bool enabled);
 void bmoveSetAutoAimY(bool enabled);
@@ -43,5 +47,8 @@ void bmoveUpdateHead(f32 arg0, f32 arg1, f32 arg2, Mtxf *arg3, f32 arg4);
 void bmove0f0cc654(f32 arg0, f32 arg1, f32 arg2);
 s32 bmoveGetCrouchPos(void);
 s32 bmoveGetCrouchPosByPlayer(s32 playernum);
+s32 bmoveGetWeaponWeightClass(s32 weaponnum);
+f32 bmoveGetClassMoveScale(s32 weaponnum, bool issprinting, bool isads);
+bool bmoveIsHalfCrouchSprintActive(void);
 
 #endif

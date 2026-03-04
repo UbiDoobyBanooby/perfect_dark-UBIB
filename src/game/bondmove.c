@@ -107,6 +107,105 @@ static void bgunProcessInputAltButton(struct movedata *data, s8 contpad, s32 i)
 
 #endif // PLATFORM_N64
 
+#ifndef PLATFORM_N64
+static bool g_BmoveSprintLatched[MAX_PLAYERS];
+static bool g_BmoveHalfCrouchSprintActive[MAX_PLAYERS];
+#endif
+
+s32 bmoveGetWeaponWeightClass(s32 weaponnum)
+{
+	switch (weaponnum) {
+	case WEAPON_FALCON2:
+	case WEAPON_FALCON2_SILENCER:
+	case WEAPON_FALCON2_SCOPE:
+	case WEAPON_MAGSEC4:
+	case WEAPON_MAULER:
+	case WEAPON_PHOENIX:
+	case WEAPON_DY357MAGNUM:
+	case WEAPON_DY357LX:
+	case WEAPON_CMP150:
+	case WEAPON_CYCLONE:
+	case WEAPON_CALLISTO:
+	case WEAPON_CROSSBOW:
+	case WEAPON_TRANQUILIZER:
+	case WEAPON_LASER:
+	case WEAPON_COMBATKNIFE:
+	case WEAPON_PSYCHOSISGUN:
+	case WEAPON_PP9I:
+	case WEAPON_CC13:
+	case WEAPON_KL01313:
+	case WEAPON_ZZT:
+	case WEAPON_DMC:
+	case WEAPON_RCP45:
+		return BMOVE_WCLASS_LIGHT;
+
+	case WEAPON_RCP120:
+	case WEAPON_LAPTOPGUN:
+	case WEAPON_DRAGON:
+	case WEAPON_K7AVENGER:
+	case WEAPON_AR34:
+	case WEAPON_SUPERDRAGON:
+	case WEAPON_SHOTGUN:
+	case WEAPON_REAPER:
+	case WEAPON_DEVASTATOR:
+	case WEAPON_AR53:
+	case WEAPON_KF7SPECIAL:
+		return BMOVE_WCLASS_MEDIUM;
+
+	case WEAPON_SNIPERRIFLE:
+	case WEAPON_FARSIGHT:
+	case WEAPON_ROCKETLAUNCHER:
+	case WEAPON_ROCKETLAUNCHER_34:
+	case WEAPON_SLAYER:
+	case WEAPON_GRENADE:
+	case WEAPON_NBOMB:
+	case WEAPON_TIMEDMINE:
+	case WEAPON_PROXIMITYMINE:
+	case WEAPON_REMOTEMINE:
+	case WEAPON_ECMMINE:
+		return BMOVE_WCLASS_HEAVY;
+
+	default:
+		return BMOVE_WCLASS_MEDIUM;
+	}
+}
+
+f32 bmoveGetClassMoveScale(s32 weaponnum, bool issprinting, bool isads)
+{
+	const s32 weaponclass = bmoveGetWeaponWeightClass(weaponnum);
+
+	if (isads) {
+		switch (weaponclass) {
+		case BMOVE_WCLASS_LIGHT: return 0.60f;
+		case BMOVE_WCLASS_HEAVY: return 0.40f;
+		default: return 0.50f;
+		}
+	}
+
+	if (issprinting) {
+		switch (weaponclass) {
+		case BMOVE_WCLASS_LIGHT: return 1.00f;
+		case BMOVE_WCLASS_HEAVY: return 0.90f;
+		default: return 0.95f;
+		}
+	}
+
+	switch (weaponclass) {
+	case BMOVE_WCLASS_LIGHT: return 0.72f;
+	case BMOVE_WCLASS_HEAVY: return 0.62f;
+	default: return 0.67f;
+	}
+}
+
+bool bmoveIsHalfCrouchSprintActive(void)
+{
+#ifdef PLATFORM_N64
+	return false;
+#else
+	return g_BmoveHalfCrouchSprintActive[g_Vars.currentplayernum & 3];
+#endif
+}
+
 void bmoveSetControlDef(u32 controldef)
 {
 	g_Vars.currentplayer->controldef = controldef;
@@ -2006,31 +2105,90 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 		playerUpdateZoom();
 	}
 
-	bmoveApplyMoveData(&movedata);
+	#ifndef PLATFORM_N64
+	if (controlmode == CONTROLMODE_PC && UBIB_ACTIVE) {
+		const s32 playerindex = g_Vars.currentplayernum & 3;
+		const bool moving = movedata.digitalstepforward
+			|| movedata.digitalstepback
+			|| movedata.digitalstepleft
+			|| movedata.digitalstepright
+			|| fabsf(movedata.analogwalk) > 15.0f
+			|| fabsf(movedata.analogstrafe) > 15.0f;
+		const bool shiftpressed = inputKeyPressed(VK_LSHIFT) || inputKeyPressed(VK_RSHIFT);
+		const bool shiftjustpressed = inputKeyJustPressed(VK_LSHIFT) || inputKeyJustPressed(VK_RSHIFT);
 
-	// Speed boost
-	// After 3 seconds of holding forward at max speed, apply boost multiplier.
-	// The multiplier starts at 1 and reaches 1.25 after about 0.1 seconds.
-	if (g_Vars.currentplayer->speedmaxtime60 >= TICKS(180)) {
-		if (g_Vars.currentplayer->speedboost < 1.25f) {
-			g_Vars.currentplayer->speedboost += 0.01f * g_Vars.lvupdate60freal;
-		}
+		if (PLAYER_EXTCFG().holdsprint) {
+			g_BmoveSprintLatched[playerindex] = shiftpressed && moving && !g_Vars.currentplayer->insightaimmode;
+		} else {
+			if (shiftjustpressed && moving && !g_Vars.currentplayer->insightaimmode) {
+				if (g_BmoveSprintLatched[playerindex]
+						&& PLAYER_EXTCFG().halfcrouchsprint
+						&& bmoveGetCrouchPos() == CROUCHPOS_DUCK) {
+					// A second sprint tap while half-crouch sprinting promotes to standing sprint.
+					movedata.crouchup++;
+				}
 
-		if (g_Vars.currentplayer->speedboost > 1.25f) {
-#if PIRACYCHECKS
-			piracyRestore();
-#endif
-			g_Vars.currentplayer->speedboost = 1.25f;
-		}
-	} else {
-		if (g_Vars.currentplayer->speedboost > 1) {
-			g_Vars.currentplayer->speedboost -= 0.01f * g_Vars.lvupdate60freal;
-		}
-
-		if (g_Vars.currentplayer->speedboost < 1) {
-			g_Vars.currentplayer->speedboost = 1;
+				g_BmoveSprintLatched[playerindex] = true;
+			} else if (!moving || g_Vars.currentplayer->insightaimmode) {
+				g_BmoveSprintLatched[playerindex] = false;
+			}
 		}
 	}
+	#endif
+
+	bmoveApplyMoveData(&movedata);
+
+#ifndef PLATFORM_N64
+	if (controlmode == CONTROLMODE_PC && UBIB_ACTIVE) {
+		const s32 playerindex = g_Vars.currentplayernum & 3;
+		const bool moving = movedata.digitalstepforward
+			|| movedata.digitalstepback
+			|| movedata.digitalstepleft
+			|| movedata.digitalstepright
+			|| fabsf(movedata.analogwalk) > 15.0f
+			|| fabsf(movedata.analogstrafe) > 15.0f;
+
+		const bool issprinting = g_BmoveSprintLatched[playerindex]
+			&& moving
+			&& !g_Vars.currentplayer->insightaimmode;
+
+		g_Vars.currentplayer->speedboost = bmoveGetClassMoveScale(
+			bgunGetWeaponNum(HAND_RIGHT),
+			issprinting,
+			g_Vars.currentplayer->insightaimmode);
+
+		g_BmoveHalfCrouchSprintActive[playerindex] = PLAYER_EXTCFG().halfcrouchsprint
+			&& issprinting
+			&& (bmoveGetCrouchPos() == CROUCHPOS_DUCK);
+	} else {
+		g_BmoveHalfCrouchSprintActive[g_Vars.currentplayernum & 3] = false;
+		g_BmoveSprintLatched[g_Vars.currentplayernum & 3] = false;
+#endif
+		// Vanilla speed boost:
+		// after 3 seconds of holding forward at max speed, apply a boost multiplier.
+		if (g_Vars.currentplayer->speedmaxtime60 >= TICKS(180)) {
+			if (g_Vars.currentplayer->speedboost < 1.25f) {
+				g_Vars.currentplayer->speedboost += 0.01f * g_Vars.lvupdate60freal;
+			}
+
+			if (g_Vars.currentplayer->speedboost > 1.25f) {
+#if PIRACYCHECKS
+				piracyRestore();
+#endif
+				g_Vars.currentplayer->speedboost = 1.25f;
+			}
+		} else {
+			if (g_Vars.currentplayer->speedboost > 1) {
+				g_Vars.currentplayer->speedboost -= 0.01f * g_Vars.lvupdate60freal;
+			}
+
+			if (g_Vars.currentplayer->speedboost < 1) {
+				g_Vars.currentplayer->speedboost = 1;
+			}
+		}
+#ifndef PLATFORM_N64
+	}
+#endif
 
 	// Look ahead
 	if (g_Vars.currentplayer->pausemode == PAUSEMODE_UNPAUSED) {

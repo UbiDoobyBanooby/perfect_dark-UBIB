@@ -194,5 +194,8 @@ PD_CONSTRUCTOR static void gameConfigInit(void)
 		configRegisterUInt(strFmt("Game.Player%d.CrosshairSize", i), &g_PlayerExtCfg[j].crosshairsize, 0, 4);
 		configRegisterInt(strFmt("Game.Player%d.CrosshairHealth", i), &g_PlayerExtCfg[j].crosshairhealth, 0, CROSSHAIR_HEALTH_ON_WHITE);
 		configRegisterInt(strFmt("Game.Player%d.UseKeyReloads", i), &g_PlayerExtCfg[j].usereloads, 0, false);
+		configRegisterInt(strFmt("Game.Player%d.HoldSprint", i), &g_PlayerExtCfg[j].holdsprint, 0, 1);
+		configRegisterInt(strFmt("Game.Player%d.HalfCrouchSprint", i), &g_PlayerExtCfg[j].halfcrouchsprint, 0, 1);
+		configRegisterFloat(strFmt("Game.Player%d.HalfCrouchMoveMult", i), &g_PlayerExtCfg[j].halfcrouchmovemult, 0.f, 1.f);
 	}
 }
