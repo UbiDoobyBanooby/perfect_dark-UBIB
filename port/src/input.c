@@ -684,6 +684,20 @@ static inline void inputNormalizeUbiDoobyPcSprintCrouchBinds(void)
 
 		memset(binds[i][CK_2000], 0, sizeof(binds[i][CK_2000]));
 		inputKeyBind(i, CK_2000, 0, SDL_SCANCODE_C);
+
+		// Prevent full-crouch key conflicts: C must not also drive crouch-cycle.
+		u32 cyclebinds[INPUT_MAX_BINDS] = {0};
+		s32 writeidx = 0;
+
+		for (s32 b = 0; b < INPUT_MAX_BINDS; ++b) {
+			const u32 vk = binds[i][CK_8000][b];
+
+			if (vk != 0 && vk != SDL_SCANCODE_C && writeidx < INPUT_MAX_BINDS) {
+				cyclebinds[writeidx++] = vk;
+			}
+		}
+
+		memcpy(binds[i][CK_8000], cyclebinds, sizeof(cyclebinds));
 	}
 }
 

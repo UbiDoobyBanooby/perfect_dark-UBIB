@@ -110,6 +110,18 @@ static void bgunProcessInputAltButton(struct movedata *data, s8 contpad, s32 i)
 #ifndef PLATFORM_N64
 static bool g_BmoveSprintLatched[MAX_PLAYERS];
 static bool g_BmoveHalfCrouchSprintActive[MAX_PLAYERS];
+
+static inline bool bmoveHasMoveIntent(const struct movedata *movedata)
+{
+	return movedata->digitalstepforward
+		|| movedata->digitalstepback
+		|| movedata->digitalstepleft
+		|| movedata->digitalstepright
+		|| movedata->analogwalk > 15
+		|| movedata->analogwalk < -15
+		|| movedata->analogstrafe > 15
+		|| movedata->analogstrafe < -15;
+}
 #endif
 
 s32 bmoveGetWeaponWeightClass(s32 weaponnum)
@@ -2108,14 +2120,18 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 	#ifndef PLATFORM_N64
 	if (controlmode == CONTROLMODE_PC && UBIB_ACTIVE) {
 		const s32 playerindex = g_Vars.currentplayernum & 3;
-		const bool moving = movedata.digitalstepforward
-			|| movedata.digitalstepback
-			|| movedata.digitalstepleft
-			|| movedata.digitalstepright
-			|| fabsf(movedata.analogwalk) > 15.0f
-			|| fabsf(movedata.analogstrafe) > 15.0f;
+		const bool moving = bmoveHasMoveIntent(&movedata);
+		const s32 crouchpos = bmoveGetCrouchPos();
 		const bool shiftpressed = inputKeyPressed(VK_LSHIFT) || inputKeyPressed(VK_RSHIFT);
 		const bool shiftjustpressed = inputKeyJustPressed(VK_LSHIFT) || inputKeyJustPressed(VK_RSHIFT);
+
+		if (shiftjustpressed && crouchpos == CROUCHPOS_SQUAT) {
+			// Shift from full crouch promotes to standing; if moving, enter sprint immediately.
+			movedata.crouchup += 2;
+			if (moving && !g_Vars.currentplayer->insightaimmode) {
+				g_BmoveSprintLatched[playerindex] = true;
+			}
+		}
 
 		if (PLAYER_EXTCFG().holdsprint) {
 			g_BmoveSprintLatched[playerindex] = shiftpressed && moving && !g_Vars.currentplayer->insightaimmode;
@@ -2141,12 +2157,7 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 #ifndef PLATFORM_N64
 	if (controlmode == CONTROLMODE_PC && UBIB_ACTIVE) {
 		const s32 playerindex = g_Vars.currentplayernum & 3;
-		const bool moving = movedata.digitalstepforward
-			|| movedata.digitalstepback
-			|| movedata.digitalstepleft
-			|| movedata.digitalstepright
-			|| fabsf(movedata.analogwalk) > 15.0f
-			|| fabsf(movedata.analogstrafe) > 15.0f;
+		const bool moving = bmoveHasMoveIntent(&movedata);
 
 		const bool issprinting = g_BmoveSprintLatched[playerindex]
 			&& moving
