@@ -1921,12 +1921,27 @@ static MenuItemHandlerResult menuhandlerUbiDoobyAdsMove(s32 operation, struct me
 	return 0;
 }
 
+static MenuItemHandlerResult menuhandlerUbiDoobyModernMovement(s32 operation, struct menuitem *item, union handlerdata *data)
+{
+	switch (operation) {
+	case MENUOP_GET:
+		return g_UbiDoobyModernMovementEnabled;
+	case MENUOP_SET:
+		g_UbiDoobyModernMovementEnabled = data->checkbox.value;
+		inputApplyUbiDoobyMovementBindMode(-1, g_UbiDoobyModernMovementEnabled);
+		inputSaveBinds();
+		break;
+	}
+
+	return 0;
+}
+
 struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
 	{
 		MENUITEMTYPE_LABEL,
 		0,
 		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"Enables movement while aiming down sights.\n",
+		(uintptr_t)"- ADS Move While Aiming:\nEnables movement while aiming down sights.\nWheel controls ADS zoom.\n",
 		0,
 		NULL,
 	},
@@ -1934,7 +1949,7 @@ struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
 		MENUITEMTYPE_LABEL,
 		0,
 		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"When enabled:\n- Wheel controls ADS zoom\n- Wheel weapon switch is disabled in ADS\n- ADS movement uses normal movement keys\n",
+		(uintptr_t)"- Modern Movement:\nWeapon weight changes sprint, walk, and ADS speed\nfor light/medium/heavy classes.\n",
 		0,
 		NULL,
 	},
@@ -1942,7 +1957,7 @@ struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
 		MENUITEMTYPE_LABEL,
 		0,
 		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"Respecting UBIB policy:\nVanilla Mode disables this mod behavior.\n",
+		(uintptr_t)"Half-crouch has normal and sprint states.\nTap Sprint while moving to sprint until movement\nstops. Tap again in half-crouch sprint to stand sprint.\nCtrl = half-crouch, C = full crouch.\nVanilla Mode disables these behaviors.\n",
 		0,
 		NULL,
 	},
@@ -1967,7 +1982,7 @@ struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
 
 struct menudialogdef g_UbiDoobyAdsInfoMenuDialog = {
 	MENUDIALOGTYPE_DEFAULT,
-	(uintptr_t)"ADS Info",
+	(uintptr_t)"Movement Info",
 	g_UbiDoobyAdsInfoMenuItems,
 	NULL,
 	MENUDIALOGFLAG_LITERAL_TEXT | MENUDIALOGFLAG_SMOOTHSCROLLABLE,
@@ -1990,6 +2005,14 @@ struct menuitem g_UbiDoobyAdsMenuItems[] = {
 		(uintptr_t)"Mouse Aim Lock (Recommended)\n",
 		0,
 		menuhandlerMouseAimLock,
+	},
+	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Modern Movement\n",
+		0,
+		menuhandlerUbiDoobyModernMovement,
 	},
 	{
 		MENUITEMTYPE_SELECTABLE,
@@ -2020,7 +2043,7 @@ struct menuitem g_UbiDoobyAdsMenuItems[] = {
 
 struct menudialogdef g_UbiDoobyAdsMenuDialog = {
 	MENUDIALOGTYPE_DEFAULT,
-	(uintptr_t)"ADS Options",
+	(uintptr_t)"Movement",
 	g_UbiDoobyAdsMenuItems,
 	NULL,
 	MENUDIALOGFLAG_LITERAL_TEXT | MENUDIALOGFLAG_SMOOTHSCROLLABLE,
@@ -2048,7 +2071,7 @@ struct menuitem g_UbiDoobyVanillaModeMenuItems[] = {
 		MENUITEMTYPE_LABEL,
 		0,
 		MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"Managed features:\n- (none yet)\n",
+		(uintptr_t)"Managed features:\n- ADS Move While Aiming\n- Modern Movement\n",
 		0,
 		NULL,
 	},
@@ -2093,17 +2116,9 @@ struct menuitem g_UbiDoobyMenuItems[] = {
 		MENUITEMTYPE_SELECTABLE,
 		0,
 		MENUITEMFLAG_SELECTABLE_OPENSDIALOG | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"ADS Options\n",
+		(uintptr_t)"Movement\n",
 		0,
 		(void *)&g_UbiDoobyAdsMenuDialog,
-	},
-	{
-		MENUITEMTYPE_LABEL,
-		0,
-		MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"(Placeholder)\n",
-		0,
-		NULL,
 	},
 	{
 		MENUITEMTYPE_SEPARATOR,

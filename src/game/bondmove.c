@@ -2118,7 +2118,7 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 	}
 
 	#ifndef PLATFORM_N64
-	if (controlmode == CONTROLMODE_PC && UBIB_ACTIVE) {
+	if (controlmode == CONTROLMODE_PC && UBIB_FEATURE_ON(g_UbiDoobyModernMovementEnabled)) {
 		const s32 playerindex = g_Vars.currentplayernum & 3;
 		const bool moving = bmoveHasMoveIntent(&movedata);
 		const s32 crouchpos = bmoveGetCrouchPos();
@@ -2155,7 +2155,7 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 	bmoveApplyMoveData(&movedata);
 
 #ifndef PLATFORM_N64
-	if (controlmode == CONTROLMODE_PC && UBIB_ACTIVE) {
+	if (controlmode == CONTROLMODE_PC && UBIB_FEATURE_ON(g_UbiDoobyModernMovementEnabled)) {
 		const s32 playerindex = g_Vars.currentplayernum & 3;
 		const bool moving = bmoveHasMoveIntent(&movedata);
 

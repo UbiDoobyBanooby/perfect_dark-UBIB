@@ -11,6 +11,7 @@
 #include "utils.h"
 #include "system.h"
 #include "fs.h"
+#include "data.h"
 
 #if !SDL_VERSION_ATLEAST(2, 0, 14)
 // this was added in 2.0.14
@@ -675,30 +676,55 @@ static inline void inputLoadBinds(void)
 	}
 }
 
-static inline void inputNormalizeUbiDoobyPcSprintCrouchBinds(void)
+static inline void inputApplyUbiDoobyMovementBindsForPlayer(const s32 i, const s32 modernenabled)
 {
-	for (s32 i = 0; i < MAXCONTROLLERS; ++i) {
-		memset(binds[i][CK_4000], 0, sizeof(binds[i][CK_4000]));
+	memset(binds[i][CK_4000], 0, sizeof(binds[i][CK_4000]));
+	memset(binds[i][CK_2000], 0, sizeof(binds[i][CK_2000]));
+
+	if (modernenabled) {
 		inputKeyBind(i, CK_4000, 0, SDL_SCANCODE_LCTRL);
 		inputKeyBind(i, CK_4000, 1, SDL_SCANCODE_RCTRL);
-
-		memset(binds[i][CK_2000], 0, sizeof(binds[i][CK_2000]));
 		inputKeyBind(i, CK_2000, 0, SDL_SCANCODE_C);
-
-		// Prevent full-crouch key conflicts: C must not also drive crouch-cycle.
-		u32 cyclebinds[INPUT_MAX_BINDS] = {0};
-		s32 writeidx = 0;
-
-		for (s32 b = 0; b < INPUT_MAX_BINDS; ++b) {
-			const u32 vk = binds[i][CK_8000][b];
-
-			if (vk != 0 && vk != SDL_SCANCODE_C && writeidx < INPUT_MAX_BINDS) {
-				cyclebinds[writeidx++] = vk;
-			}
-		}
-
-		memcpy(binds[i][CK_8000], cyclebinds, sizeof(cyclebinds));
+	} else {
+		inputKeyBind(i, CK_4000, 0, SDL_SCANCODE_LSHIFT);
+		inputKeyBind(i, CK_2000, 0, SDL_SCANCODE_LCTRL);
+		inputKeyBind(i, CK_2000, 1, SDL_SCANCODE_C);
 	}
+
+	// Prevent full-crouch key conflicts: C must not also drive crouch-cycle.
+	u32 cyclebinds[INPUT_MAX_BINDS] = {0};
+	s32 writeidx = 0;
+
+	for (s32 b = 0; b < INPUT_MAX_BINDS; ++b) {
+		const u32 vk = binds[i][CK_8000][b];
+
+		if (vk != 0 && vk != SDL_SCANCODE_C && writeidx < INPUT_MAX_BINDS) {
+			cyclebinds[writeidx++] = vk;
+		}
+	}
+
+	memcpy(binds[i][CK_8000], cyclebinds, sizeof(cyclebinds));
+}
+
+void inputApplyUbiDoobyMovementBindMode(s32 cidx, s32 modernenabled)
+{
+	if (cidx < 0) {
+		for (s32 i = 0; i < MAXCONTROLLERS; ++i) {
+			inputApplyUbiDoobyMovementBindsForPlayer(i, modernenabled);
+		}
+		return;
+	}
+
+	if (cidx < 0 || cidx >= MAXCONTROLLERS) {
+		return;
+	}
+
+	inputApplyUbiDoobyMovementBindsForPlayer(cidx, modernenabled);
+}
+
+static inline void inputNormalizeUbiDoobyPcSprintCrouchBinds(void)
+{
+	inputApplyUbiDoobyMovementBindMode(-1, g_UbiDoobyModernMovementEnabled);
 }
 
 s32 inputInit(void)

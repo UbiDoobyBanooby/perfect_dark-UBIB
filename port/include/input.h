@@ -241,6 +241,7 @@ void inputSaveBinds(void);
 
 // reset given player's binds to either PC or N64 defaults
 void inputSetDefaultKeyBinds(s32 cidx, s32 n64mode);
+void inputApplyUbiDoobyMovementBindMode(s32 cidx, s32 modernenabled);
 
 // clear or get the last pressed button
 void inputClearLastKey(void);
