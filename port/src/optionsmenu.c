@@ -1900,6 +1900,112 @@ static MenuItemHandlerResult menuhandlerUbiDoobyAdsMove(s32 operation, struct me
 	return 0;
 }
 
+struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Enables movement while aiming down sights.\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"When enabled:\n- Wheel controls ADS zoom\n- Wheel weapon switch is disabled in ADS\n- ADS movement uses normal movement keys\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Respecting UBIB policy:\nVanilla Mode disables this mod behavior.\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_SEPARATOR,
+		0,
+		0,
+		0,
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_SELECTABLE,
+		0,
+		MENUITEMFLAG_SELECTABLE_CLOSESDIALOG,
+		L_OPTIONS_213, // "Back"
+		0,
+		NULL,
+	},
+	{ MENUITEMTYPE_END },
+};
+
+struct menudialogdef g_UbiDoobyAdsInfoMenuDialog = {
+	MENUDIALOGTYPE_DEFAULT,
+	(uintptr_t)"ADS Info",
+	g_UbiDoobyAdsInfoMenuItems,
+	NULL,
+	MENUDIALOGFLAG_LITERAL_TEXT | MENUDIALOGFLAG_SMOOTHSCROLLABLE,
+	NULL,
+};
+
+struct menuitem g_UbiDoobyAdsMenuItems[] = {
+	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"ADS Move While Aiming\n",
+		0,
+		menuhandlerUbiDoobyAdsMove,
+	},
+	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Mouse Aim Lock (Recommended)\n",
+		0,
+		menuhandlerMouseAimLock,
+	},
+	{
+		MENUITEMTYPE_SELECTABLE,
+		0,
+		MENUITEMFLAG_SELECTABLE_OPENSDIALOG | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Info\n",
+		0,
+		(void *)&g_UbiDoobyAdsInfoMenuDialog,
+	},
+	{
+		MENUITEMTYPE_SEPARATOR,
+		0,
+		0,
+		0,
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_SELECTABLE,
+		0,
+		MENUITEMFLAG_SELECTABLE_CLOSESDIALOG,
+		L_OPTIONS_213, // "Back"
+		0,
+		NULL,
+	},
+	{ MENUITEMTYPE_END },
+};
+
+struct menudialogdef g_UbiDoobyAdsMenuDialog = {
+	MENUDIALOGTYPE_DEFAULT,
+	(uintptr_t)"ADS Options",
+	g_UbiDoobyAdsMenuItems,
+	NULL,
+	MENUDIALOGFLAG_LITERAL_TEXT | MENUDIALOGFLAG_SMOOTHSCROLLABLE,
+	NULL,
+};
+
 struct menuitem g_UbiDoobyVanillaModeMenuItems[] = {
 	{
 		MENUITEMTYPE_CHECKBOX,
@@ -1963,20 +2069,12 @@ struct menuitem g_UbiDoobyMenuItems[] = {
 		(void *)&g_UbiDoobyVanillaModeMenuDialog,
 	},
 	{
-		MENUITEMTYPE_CHECKBOX,
+		MENUITEMTYPE_SELECTABLE,
 		0,
-		MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"ADS Move While Aiming\n",
+		MENUITEMFLAG_SELECTABLE_OPENSDIALOG | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"ADS Options\n",
 		0,
-		menuhandlerUbiDoobyAdsMove,
-	},
-	{
-		MENUITEMTYPE_CHECKBOX,
-		0,
-		MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"Mouse Aim Lock (Recommended)\n",
-		0,
-		menuhandlerMouseAimLock,
+		(void *)&g_UbiDoobyAdsMenuDialog,
 	},
 	{
 		MENUITEMTYPE_LABEL,
