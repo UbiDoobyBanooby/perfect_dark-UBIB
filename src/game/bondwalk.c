@@ -1187,7 +1187,7 @@ void bwalkApplyCrouchSpeed(void)
 		f32 mult = 0.5f;
 
 #ifndef PLATFORM_N64
-		if (UBIB_ACTIVE) {
+		if (UBIB_FEATURE_ON(g_UbiDoobyModernMovementEnabled)) {
 			const s32 weaponclass = bmoveGetWeaponWeightClass(bgunGetWeaponNum(HAND_RIGHT));
 			const bool ducksprint = PLAYER_EXTCFG().halfcrouchsprint && bmoveIsHalfCrouchSprintActive();
 
@@ -1450,7 +1450,7 @@ void bwalkApplyMoveData(struct movedata *data)
 		g_Vars.currentplayer->speedforwards *= 1.08f;
 		g_Vars.currentplayer->speedforwards *= g_Vars.currentplayer->speedboost;
 #ifndef PLATFORM_N64
-		if (UBIB_ACTIVE) {
+		if (UBIB_FEATURE_ON(g_UbiDoobyModernMovementEnabled)) {
 			g_Vars.currentplayer->speedsideways *= g_Vars.currentplayer->speedboost;
 		}
 #endif
