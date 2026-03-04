@@ -142,6 +142,9 @@ struct mpweapon g_MpWeapons[NUM_MPWEAPONS] = {
 	.crosshairedgeboundary = 0.7f, \
 	.crosshairhealth = CROSSHAIR_HEALTH_OFF, \
 	.usereloads = false, \
+	.holdsprint = false, \
+	.halfcrouchsprint = true, \
+	.halfcrouchmovemult = 0.5f, \
 }
 
 struct extplayerconfig g_PlayerExtCfg[MAX_PLAYERS] = {

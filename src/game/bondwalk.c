@@ -1184,8 +1184,35 @@ void bwalkUpdateVertical(void)
 void bwalkApplyCrouchSpeed(void)
 {
 	if (bmoveGetCrouchPos() == CROUCHPOS_DUCK) {
-		g_Vars.currentplayer->speedforwards *= 0.5f;
-		g_Vars.currentplayer->speedsideways *= 0.5f;
+		f32 mult = 0.5f;
+
+#ifndef PLATFORM_N64
+		if (UBIB_ACTIVE) {
+			const s32 weaponclass = bmoveGetWeaponWeightClass(bgunGetWeaponNum(HAND_RIGHT));
+			const bool ducksprint = PLAYER_EXTCFG().halfcrouchsprint && bmoveIsHalfCrouchSprintActive();
+
+			if (ducksprint) {
+				if (weaponclass == BMOVE_WCLASS_LIGHT) {
+					mult = 0.65f;
+				} else if (weaponclass == BMOVE_WCLASS_HEAVY) {
+					mult = 0.59f;
+				} else {
+					mult = 0.62f;
+				}
+			} else {
+				if (weaponclass == BMOVE_WCLASS_LIGHT) {
+					mult = 0.53f;
+				} else if (weaponclass == BMOVE_WCLASS_HEAVY) {
+					mult = 0.47f;
+				} else {
+					mult = 0.50f;
+				}
+			}
+		}
+#endif
+
+		g_Vars.currentplayer->speedforwards *= mult;
+		g_Vars.currentplayer->speedsideways *= mult;
 	} else if (bmoveGetCrouchPos() == CROUCHPOS_SQUAT) {
 		g_Vars.currentplayer->speedforwards *= 0.35f;
 		g_Vars.currentplayer->speedsideways *= 0.35f;
@@ -1422,6 +1449,11 @@ void bwalkApplyMoveData(struct movedata *data)
 
 		g_Vars.currentplayer->speedforwards *= 1.08f;
 		g_Vars.currentplayer->speedforwards *= g_Vars.currentplayer->speedboost;
+#ifndef PLATFORM_N64
+		if (UBIB_ACTIVE) {
+			g_Vars.currentplayer->speedsideways *= g_Vars.currentplayer->speedboost;
+		}
+#endif
 
 		if ((data->canlookahead == false && data->digitalstepforward == false) ||
 				bmoveGetCrouchPos() != CROUCHPOS_STAND) {

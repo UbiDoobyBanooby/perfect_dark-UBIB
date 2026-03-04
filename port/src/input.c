@@ -208,8 +208,8 @@ void inputSetDefaultKeyBinds(s32 cidx, s32 n64mode)
 		{ CK_STICK_XPOS,    SDL_SCANCODE_RIGHT,  0                   },
 		{ CK_STICK_YNEG,    SDL_SCANCODE_DOWN,   0                   },
 		{ CK_STICK_YPOS,    SDL_SCANCODE_UP,     0                   },
-		{ CK_4000,          SDL_SCANCODE_LSHIFT, 0                   },
-		{ CK_2000,          SDL_SCANCODE_LCTRL,  0                   },
+		{ CK_4000,          SDL_SCANCODE_LCTRL,  0                   },
+		{ CK_2000,          SDL_SCANCODE_C,      0                   },
 		{ CK_ACCEPT,        SDL_SCANCODE_RETURN, SDL_SCANCODE_E      },
 		{ CK_CANCEL,        VK_MOUSE_RIGHT,      0                   },
 	};
@@ -677,6 +677,18 @@ static inline void inputLoadBinds(void)
 	}
 }
 
+static inline void inputNormalizeUbiDoobyPcSprintCrouchBinds(void)
+{
+	for (s32 i = 0; i < MAXCONTROLLERS; ++i) {
+		memset(binds[i][CK_4000], 0, sizeof(binds[i][CK_4000]));
+		inputKeyBind(i, CK_4000, 0, SDL_SCANCODE_LCTRL);
+		inputKeyBind(i, CK_4000, 1, SDL_SCANCODE_RCTRL);
+
+		memset(binds[i][CK_2000], 0, sizeof(binds[i][CK_2000]));
+		inputKeyBind(i, CK_2000, 0, SDL_SCANCODE_C);
+	}
+}
+
 s32 inputInit(void)
 {
 	// Set SDL hints before initializing the controller subsystem.
@@ -755,6 +767,7 @@ s32 inputInit(void)
 	}
 
 	inputLoadBinds();
+	inputNormalizeUbiDoobyPcSprintCrouchBinds();
 
 	return connectedMask;
 }
