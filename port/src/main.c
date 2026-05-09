@@ -41,6 +41,7 @@ s32 g_UbiDoobyModsEnabled = true;
 s32 g_UbiDoobyVanillaMode = false;
 s32 g_UbiDoobyAdsMoveEnabled = true;
 s32 g_UbiDoobyModernMovementEnabled = true;
+s32 g_UbiDoobyWeaponWheelHold = true;
 
 s32 g_SkipIntro = false;
 
@@ -174,6 +175,7 @@ PD_CONSTRUCTOR static void gameConfigInit(void)
 	configRegisterInt("Game.UbiDooby.VanillaMode", &g_UbiDoobyVanillaMode, 0, 1);
 	configRegisterInt("Game.UbiDooby.AdsMoveEnabled", &g_UbiDoobyAdsMoveEnabled, 0, 1);
 	configRegisterInt("Game.UbiDooby.ModernMovementEnabled", &g_UbiDoobyModernMovementEnabled, 0, 1);
+	configRegisterInt("Game.UbiDooby.WeaponWheelHold", &g_UbiDoobyWeaponWheelHold, 0, 1);
 	configRegisterInt("Game.SkipIntro", &g_SkipIntro, 0, 1);
 	configRegisterInt("Game.DisableMpDeathMusic", &g_MusicDisableMpDeath, 0, 1);
 	configRegisterInt("Game.GEMuzzleFlashes", &g_BgunGeMuzzleFlashes, 0, 1);

@@ -1915,31 +1915,51 @@ static MenuItemHandlerResult menuhandlerUbiDoobyModernMovement(s32 operation, st
 	return 0;
 }
 
+static MenuItemHandlerResult menuhandlerUbiDoobyWeaponWheelHold(s32 operation, struct menuitem *item, union handlerdata *data)
+{
+	switch (operation) {
+	case MENUOP_GET:
+		return g_UbiDoobyWeaponWheelHold;
+	case MENUOP_SET:
+		g_UbiDoobyWeaponWheelHold = data->checkbox.value;
+		break;
+	}
+
+	return 0;
+}
+
+#define UBIB_INFO_LABEL(text) \
+	{ MENUITEMTYPE_LABEL, 0, MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT, (uintptr_t)(text "\n"), 0, NULL }
+
 struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
-	{
-		MENUITEMTYPE_LABEL,
-		0,
-		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"- ADS Move While Aiming:\nEnables movement while aiming down sights.\nWheel controls ADS zoom.\n",
-		0,
-		NULL,
-	},
-	{
-		MENUITEMTYPE_LABEL,
-		0,
-		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"- Modern Movement:\nWeapon weight changes sprint, walk, and ADS speed\nfor light/medium/heavy classes.\n",
-		0,
-		NULL,
-	},
-	{
-		MENUITEMTYPE_LABEL,
-		0,
-		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"Half-crouch has normal and sprint states.\nTap Sprint while moving to sprint until movement\nstops. Tap again in half-crouch sprint to stand sprint.\nCtrl = half-crouch, C = full crouch.\nVanilla Mode disables these behaviors.\n",
-		0,
-		NULL,
-	},
+	UBIB_INFO_LABEL("- ADS Move While Aiming:"),
+	UBIB_INFO_LABEL("Move while aiming down sights."),
+	UBIB_INFO_LABEL("Mouse wheel controls ADS zoom."),
+	UBIB_INFO_LABEL(" "),
+	UBIB_INFO_LABEL("- Modern Movement:"),
+	UBIB_INFO_LABEL("Weapon weight changes speed."),
+	UBIB_INFO_LABEL("Light weapons move fastest."),
+	UBIB_INFO_LABEL("Medium weapons are balanced."),
+	UBIB_INFO_LABEL("Heavy weapons move slower."),
+	UBIB_INFO_LABEL(" "),
+	UBIB_INFO_LABEL("Sprint, walk, and ADS speed"),
+	UBIB_INFO_LABEL("scale by weapon class."),
+	UBIB_INFO_LABEL(" "),
+	UBIB_INFO_LABEL("Half-crouch has normal"),
+	UBIB_INFO_LABEL("and sprint movement states."),
+	UBIB_INFO_LABEL("Tap Sprint while moving"),
+	UBIB_INFO_LABEL("to sprint until movement stops."),
+	UBIB_INFO_LABEL("Tap Sprint again while"),
+	UBIB_INFO_LABEL("half-crouch sprinting"),
+	UBIB_INFO_LABEL("to enter standing sprint."),
+	UBIB_INFO_LABEL(" "),
+	UBIB_INFO_LABEL("Ctrl = half-crouch."),
+	UBIB_INFO_LABEL("C = full crouch."),
+	UBIB_INFO_LABEL(" "),
+	UBIB_INFO_LABEL("Weapon Wheel can use"),
+	UBIB_INFO_LABEL("Toggle or Hold behavior."),
+	UBIB_INFO_LABEL("Modern Movement lets you"),
+	UBIB_INFO_LABEL("move while the wheel is open."),
 	{
 		MENUITEMTYPE_SEPARATOR,
 		0,
@@ -1958,6 +1978,8 @@ struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
 	},
 	{ MENUITEMTYPE_END },
 };
+
+#undef UBIB_INFO_LABEL
 
 struct menudialogdef g_UbiDoobyAdsInfoMenuDialog = {
 	MENUDIALOGTYPE_DEFAULT,
@@ -1992,6 +2014,14 @@ struct menuitem g_UbiDoobyAdsMenuItems[] = {
 		(uintptr_t)"Modern Movement\n",
 		0,
 		menuhandlerUbiDoobyModernMovement,
+	},
+	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Weapon Wheel-Hold\n",
+		0,
+		menuhandlerUbiDoobyWeaponWheelHold,
 	},
 	{
 		MENUITEMTYPE_SELECTABLE,

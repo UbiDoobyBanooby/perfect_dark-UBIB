@@ -17,6 +17,49 @@
 #include "input.h"
 #endif
 
+#ifndef PLATFORM_N64
+static s32 amGetNearestPopulatedSlot(s32 stickx, s32 sticky, s32 fallbackslot)
+{
+	static const s8 slotxs[] = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
+	static const s8 slotys[] = { 1, 1, 1, 0, 0, 0, -1, -1, -1 };
+	s32 bestslot = fallbackslot;
+	s32 bestscore = 0;
+	s32 i;
+
+	for (i = 0; i < ARRAYCOUNT(slotxs); i++) {
+		char text[28];
+		u32 flags;
+		s32 dot;
+		s32 score;
+
+		if (i == 4) {
+			continue;
+		}
+
+		amGetSlotDetails(i, &flags, text);
+
+		if (strcmp(text, "") == 0) {
+			continue;
+		}
+
+		dot = stickx * slotxs[i] + sticky * slotys[i];
+
+		if (dot <= 0) {
+			continue;
+		}
+
+		score = dot * ((slotxs[i] != 0 && slotys[i] != 0) ? 707 : 1000);
+
+		if (score > bestscore) {
+			bestscore = score;
+			bestslot = i;
+		}
+	}
+
+	return bestslot;
+}
+#endif
+
 void amTick(void)
 {
 	s32 prevplayernum = g_Vars.currentplayernum;
@@ -45,6 +88,11 @@ void amTick(void)
 			s32 numsamples = joyGetNumSamples();
 			s32 j;
 			u32 amask, lrtmask, umask, dmask, lmask, rmask;
+#ifndef PLATFORM_N64
+			const bool ubibweaponwheel = controlmode == CONTROLMODE_PC
+				&& UBIB_FEATURE_ON(g_UbiDoobyModernMovementEnabled)
+				&& g_AmMenus[g_AmIndex].screenindex < 2;
+#endif
 
 			if (controlmode == CONTROLMODE_PC) {
 				amask = D_JPAD;
@@ -53,6 +101,14 @@ void amTick(void)
 				dmask = D_CBUTTONS;
 				lmask = L_CBUTTONS;
 				rmask = R_CBUTTONS;
+#ifndef PLATFORM_N64
+				if (ubibweaponwheel) {
+					umask = 0;
+					dmask = 0;
+					lmask = 0;
+					rmask = 0;
+				}
+#endif
 			} else {
 				amask = A_BUTTON;
 				lrtmask = L_TRIG | R_TRIG;
@@ -91,8 +147,8 @@ void amTick(void)
 				g_AmMenus[g_AmIndex].allbots = false;
 
 #ifndef PLATFORM_N64
-				s32 newstickx = (s32)cstickx;
-				s32 newsticky = (s32)csticky;
+				s32 newstickx = ubibweaponwheel ? 0 : (s32)cstickx;
+				s32 newsticky = ubibweaponwheel ? 0 : (s32)csticky;
 				if (j == 0 && g_Vars.currentplayernum == 0 && inputMouseIsLocked()) {
 					f32 mdx, mdy;
 					struct activemenu *am = &g_AmMenus[g_AmIndex];
@@ -147,6 +203,12 @@ void amTick(void)
 #endif
 					}
 				}
+
+#ifndef PLATFORM_N64
+				if (ubibweaponwheel && !g_UbiDoobyWeaponWheelHold) {
+					stayopen = true;
+				}
+#endif
 
 				// If entering allbots mode, save current screen
 				if (g_AmMenus[g_AmIndex].allbots
@@ -332,6 +394,11 @@ void amTick(void)
 				}
 
 				slotnum = column * 1 + row * 3;
+#ifndef PLATFORM_N64
+				if (ubibweaponwheel && stickpushed) {
+					slotnum = amGetNearestPopulatedSlot(cstickx, csticky, slotnum);
+				}
+#endif
 
 				if (g_Vars.currentplayer->activemenumode != AMMODE_EDIT) {
 					if (slotnum == 4) {
