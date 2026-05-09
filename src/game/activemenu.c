@@ -33,6 +33,16 @@ s32 g_AmIndex;
 
 struct menudialogdef g_AmPickTargetMenuDialog;
 
+#ifndef PLATFORM_N64
+static bool amShouldKeepPcMovement(void)
+{
+	return optionsGetControlMode(g_Vars.currentplayerstats->mpindex) == CONTROLMODE_PC
+		&& UBIB_FEATURE_ON(g_UbiDoobyModernMovementEnabled)
+		&& g_Vars.currentplayer->activemenumode == AMMODE_VIEW
+		&& g_AmMenus[g_AmIndex].screenindex < 2;
+}
+#endif
+
 /**
  * This is a map of weapon numbers (as per the weapon set) to active menu slots.
  * For the purpose of this array, the AM slots are:
@@ -745,17 +755,30 @@ void amOpen(void)
 		g_AmMenus[g_AmIndex].origscreennum = 0;
 		g_AmMenus[g_AmIndex].prevallbots = 0;
 		g_AmMenus[g_AmIndex].allbots = false;
+#ifndef PLATFORM_N64
+		if (amShouldKeepPcMovement()) {
+			g_PlayersWithControl[g_Vars.currentplayernum] = true;
+		}
+#endif
 	}
 }
 
 void amClose(void)
 {
+#ifndef PLATFORM_N64
+	const bool keepmovement = amShouldKeepPcMovement();
+#endif
+
 	if (g_AmMenus[g_AmIndex].slotnum != 4) {
 		amApply(g_AmMenus[g_AmIndex].slotnum);
 	}
 
 	g_Vars.currentplayer->activemenumode = AMMODE_CLOSED;
+#ifndef PLATFORM_N64
+	g_Vars.currentplayer->joybutinhibit = keepmovement ? D_JPAD : 0xffffffff;
+#else
 	g_Vars.currentplayer->joybutinhibit = 0xffffffff;
+#endif
 	g_PlayersWithControl[g_Vars.currentplayernum] = 1;
 }
 

@@ -559,6 +559,7 @@ extern s32 g_UbiDoobyModsEnabled;
 extern s32 g_UbiDoobyVanillaMode;
 extern s32 g_UbiDoobyAdsMoveEnabled;
 extern s32 g_UbiDoobyModernMovementEnabled;
+extern s32 g_UbiDoobyWeaponWheelHold;
 extern s32 g_MusicDisableMpDeath;
 extern s32 g_BgunGeMuzzleFlashes;
 extern s32 g_FileAutoSelect;

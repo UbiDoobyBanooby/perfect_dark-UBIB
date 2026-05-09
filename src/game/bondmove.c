@@ -885,10 +885,17 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 #ifndef PLATFORM_N64
 	if (allowmlook) {
 		inputMouseGetScaledDelta(&movedata.freelookdx, &movedata.freelookdy);
-		allowmcross = (PLAYER_EXTCFG().mouseaimmode == MOUSEAIM_CLASSIC) &&
-			(movedata.freelookdx || movedata.freelookdy || g_Vars.currentplayer->swivelpos[0] || g_Vars.currentplayer->swivelpos[1]);
-		if (movedata.invertpitch) {
-			movedata.freelookdy = -movedata.freelookdy;
+		if (controlmode == CONTROLMODE_PC
+				&& UBIB_FEATURE_ON(g_UbiDoobyModernMovementEnabled)
+				&& g_Vars.currentplayer->activemenumode != AMMODE_CLOSED) {
+			movedata.freelookdx = 0.0f;
+			movedata.freelookdy = 0.0f;
+		} else {
+			allowmcross = (PLAYER_EXTCFG().mouseaimmode == MOUSEAIM_CLASSIC) &&
+				(movedata.freelookdx || movedata.freelookdy || g_Vars.currentplayer->swivelpos[0] || g_Vars.currentplayer->swivelpos[1]);
+			if (movedata.invertpitch) {
+				movedata.freelookdy = -movedata.freelookdy;
+			}
 		}
 	}
 	// always pause with ESC
@@ -1722,7 +1729,20 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 
 						// Handle radial menu (D-Down)
 						for (i = 0; i < numsamples; i++) {
-							if (joyGetButtonsOnSample(i, contpad1, c1allowedbuttons & BUTTON_RADIAL)) {
+							bool radialdown = joyGetButtonsOnSample(i, contpad1, c1allowedbuttons & BUTTON_RADIAL);
+							bool radialpressed = joyGetButtonsPressedOnSample(i, contpad1, c1allowedbuttons & BUTTON_RADIAL);
+							bool togglewheel = UBIB_FEATURE_ON(g_UbiDoobyModernMovementEnabled) && !g_UbiDoobyWeaponWheelHold;
+
+							if (togglewheel && radialpressed) {
+								if (g_Vars.currentplayer->activemenumode == AMMODE_VIEW
+										&& g_AmMenus[g_AmIndex].screenindex < 2) {
+									amClose();
+								} else if (g_Vars.currentplayer->activemenumode == AMMODE_CLOSED) {
+									amOpen();
+								}
+
+								g_Vars.currentplayer->amdowntime = -1;
+							} else if (radialdown && !togglewheel) {
 								if (g_Vars.currentplayer->amdowntime < -2) {
 									g_Vars.currentplayer->amdowntime += numsamples;
 
