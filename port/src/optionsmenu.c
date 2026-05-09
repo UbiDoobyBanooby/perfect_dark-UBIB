@@ -2050,6 +2050,96 @@ struct menudialogdef g_UbiDoobyAdsMenuDialog = {
 	NULL,
 };
 
+struct menuitem g_UbiDoobyUndecidedInfoMenuItems[] = {
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Temporary home for mods that are not assigned\nto a final category yet.\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Items here can move into dedicated submenus\nonce their feature package is settled.\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_SEPARATOR,
+		0,
+		0,
+		0,
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_SELECTABLE,
+		0,
+		MENUITEMFLAG_SELECTABLE_CLOSESDIALOG,
+		L_OPTIONS_213, // "Back"
+		0,
+		NULL,
+	},
+	{ MENUITEMTYPE_END },
+};
+
+struct menudialogdef g_UbiDoobyUndecidedInfoMenuDialog = {
+	MENUDIALOGTYPE_DEFAULT,
+	(uintptr_t)"Undecided Info",
+	g_UbiDoobyUndecidedInfoMenuItems,
+	NULL,
+	MENUDIALOGFLAG_LITERAL_TEXT | MENUDIALOGFLAG_SMOOTHSCROLLABLE,
+	NULL,
+};
+
+struct menuitem g_UbiDoobyUndecidedMenuItems[] = {
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"No undecided mods yet.\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_SELECTABLE,
+		0,
+		MENUITEMFLAG_SELECTABLE_OPENSDIALOG | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Info\n",
+		0,
+		(void *)&g_UbiDoobyUndecidedInfoMenuDialog,
+	},
+	{
+		MENUITEMTYPE_SEPARATOR,
+		0,
+		0,
+		0,
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_SELECTABLE,
+		0,
+		MENUITEMFLAG_SELECTABLE_CLOSESDIALOG,
+		L_OPTIONS_213, // "Back"
+		0,
+		NULL,
+	},
+	{ MENUITEMTYPE_END },
+};
+
+struct menudialogdef g_UbiDoobyUndecidedMenuDialog = {
+	MENUDIALOGTYPE_DEFAULT,
+	(uintptr_t)"Undecided",
+	g_UbiDoobyUndecidedMenuItems,
+	NULL,
+	MENUDIALOGFLAG_LITERAL_TEXT | MENUDIALOGFLAG_SMOOTHSCROLLABLE,
+	NULL,
+};
+
 struct menuitem g_UbiDoobyVanillaModeMenuItems[] = {
 	{
 		MENUITEMTYPE_CHECKBOX,
@@ -2119,6 +2209,14 @@ struct menuitem g_UbiDoobyMenuItems[] = {
 		(uintptr_t)"Movement\n",
 		0,
 		(void *)&g_UbiDoobyAdsMenuDialog,
+	},
+	{
+		MENUITEMTYPE_SELECTABLE,
+		0,
+		MENUITEMFLAG_SELECTABLE_OPENSDIALOG | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Undecided\n",
+		0,
+		(void *)&g_UbiDoobyUndecidedMenuDialog,
 	},
 	{
 		MENUITEMTYPE_SEPARATOR,
