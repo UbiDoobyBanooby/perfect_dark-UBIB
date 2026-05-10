@@ -1949,6 +1949,19 @@ static MenuItemHandlerResult menuhandlerUbiDoobyWeaponWheelHold(s32 operation, s
 	return 0;
 }
 
+static MenuItemHandlerResult menuhandlerUbiDoobyLiveTargetReticle(s32 operation, struct menuitem *item, union handlerdata *data)
+{
+	switch (operation) {
+	case MENUOP_GET:
+		return g_UbiDoobyLiveTargetReticleEnabled;
+	case MENUOP_SET:
+		g_UbiDoobyLiveTargetReticleEnabled = data->checkbox.value;
+		break;
+	}
+
+	return 0;
+}
+
 #define UBIB_INFO_LABEL(text) \
 	{ MENUITEMTYPE_LABEL, 0, MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT, (uintptr_t)(text "\n"), 0, NULL }
 
@@ -2127,12 +2140,12 @@ struct menudialogdef g_UbiDoobyUndecidedInfoMenuDialog = {
 
 struct menuitem g_UbiDoobyUndecidedMenuItems[] = {
 	{
-		MENUITEMTYPE_LABEL,
+		MENUITEMTYPE_CHECKBOX,
 		0,
-		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"No undecided mods yet.\n",
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Live Target Reticle\n",
 		0,
-		NULL,
+		menuhandlerUbiDoobyLiveTargetReticle,
 	},
 	{
 		MENUITEMTYPE_SELECTABLE,
