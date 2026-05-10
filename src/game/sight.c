@@ -192,12 +192,23 @@ bool sightIsReactiveToProp(struct prop *prop)
 	} else if (prop->type == PROPTYPE_CHR) {
 		struct chrdata *chr = prop->chr;
 
+		if (UBIB_FEATURE_ON(g_UbiDoobyLiveTargetReticleEnabled)
+				&& (chrIsDead(chr)
+					|| chr->actiontype == ACT_DRUGGEDDROP
+					|| chr->actiontype == ACT_DRUGGEDKO)) {
+			return false;
+		}
+
 		if (chr && chr->race == RACE_EYESPY) {
 			struct eyespy *eyespy = chrToEyespy(chr);
 
 			if (!eyespy || !eyespy->deployed) {
 				return false;
 			}
+		}
+	} else if (prop->type == PROPTYPE_PLAYER) {
+		if (UBIB_FEATURE_ON(g_UbiDoobyLiveTargetReticleEnabled) && chrIsDead(prop->chr)) {
+			return false;
 		}
 	}
 
