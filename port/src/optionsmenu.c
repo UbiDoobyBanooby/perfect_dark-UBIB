@@ -1941,6 +1941,19 @@ static MenuItemHandlerResult menuhandlerUbiDoobyLiveTargetReticle(s32 operation,
 	return 0;
 }
 
+static MenuItemHandlerResult menuhandlerUbiDoobyModernAdsCombat(s32 operation, struct menuitem *item, union handlerdata *data)
+{
+	switch (operation) {
+	case MENUOP_GET:
+		return g_UbiDoobyModernAdsCombatEnabled;
+	case MENUOP_SET:
+		g_UbiDoobyModernAdsCombatEnabled = data->checkbox.value;
+		break;
+	}
+
+	return 0;
+}
+
 #define UBIB_INFO_LABEL(text) \
 	{ MENUITEMTYPE_LABEL, 0, MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT, (uintptr_t)(text "\n"), 0, NULL }
 
@@ -1973,6 +1986,12 @@ struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
 	UBIB_INFO_LABEL("Toggle or Hold behavior."),
 	UBIB_INFO_LABEL("Modern Movement lets you"),
 	UBIB_INFO_LABEL("move while the wheel is open."),
+	UBIB_INFO_LABEL(" "),
+	UBIB_INFO_LABEL("- Modern ADS Combat:"),
+	UBIB_INFO_LABEL("Non-zoom guns gain 1.25x"),
+	UBIB_INFO_LABEL("zoom while aiming."),
+	UBIB_INFO_LABEL("Hipfire accuracy is reduced"),
+	UBIB_INFO_LABEL("by 25 percent."),
 	{
 		MENUITEMTYPE_SEPARATOR,
 		0,
@@ -2035,6 +2054,14 @@ struct menuitem g_UbiDoobyAdsMenuItems[] = {
 		(uintptr_t)"Weapon Wheel-Hold\n",
 		0,
 		menuhandlerUbiDoobyWeaponWheelHold,
+	},
+	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Modern ADS Combat\n",
+		0,
+		menuhandlerUbiDoobyModernAdsCombat,
 	},
 	{
 		MENUITEMTYPE_SELECTABLE,

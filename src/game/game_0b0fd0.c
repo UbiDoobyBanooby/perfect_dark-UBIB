@@ -215,6 +215,15 @@ f32 currentPlayerGetGunZoomFov(void)
 
 	if (weapon) {
 		f32 fov = weapon->aimsettings->zoomfov;
+
+#ifndef PLATFORM_N64
+		if (UBIB_FEATURE_ON(g_UbiDoobyModernAdsCombatEnabled)
+				&& g_Vars.currentplayer->insightaimmode
+				&& fov <= 0.0f) {
+			fov = 60.0f / 1.25f;
+		}
+#endif
+
 		return ADJUST_ZOOM_FOV(fov);
 	}
 

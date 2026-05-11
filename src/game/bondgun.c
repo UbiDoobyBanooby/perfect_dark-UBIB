@@ -5293,6 +5293,13 @@ void bgunCalculatePlayerShotSpread(struct coord *gunpos2d, struct coord *gundir2
 		spread *= 0.25f;
 	}
 
+#ifndef PLATFORM_N64
+	if (UBIB_FEATURE_ON(g_UbiDoobyModernAdsCombatEnabled)
+			&& !player->insightaimmode) {
+		spread *= 1.75f;
+	}
+#endif
+
 	// Decrease spread if double crouched
 	if (bmoveGetCrouchPos() == CROUCHPOS_SQUAT) {
 		spread *= 0.5f;
