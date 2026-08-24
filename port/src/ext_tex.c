@@ -248,9 +248,16 @@ void readModelTextures(const char *path, s16 fileNum, s32 *modelOffset, struct M
 	struct dirent *de;
 
 	s32 MAX_TEX = 16;
-	modelTex->textures = sysMemAlloc(MAX_TEX * sizeof(struct ExtTexture));
+	modelTex->textures = NULL;
 	modelTex->numTextures = 0;
 	modelTex->fileNum = fileNum;
+
+	if (!dr) {
+		sysLogPrintf(LOG_WARNING, "Unable to open external texture directory: %s\n", path);
+		return;
+	}
+
+	modelTex->textures = sysMemAlloc(MAX_TEX * sizeof(struct ExtTexture));
 
 	char extension[5] = { 0 };
 
@@ -263,14 +270,14 @@ void readModelTextures(const char *path, s16 fileNum, s32 *modelOffset, struct M
 		// no extension: skip
 		if (err) continue;
 
-		setTex(modelTex->textures, modelTex->numTextures, texNum, extension);
-		modelTex->numTextures++;
-
 		// allocate more memory for model textures if needed
-		if (modelTex->numTextures > MAX_TEX) {
+		if (modelTex->numTextures >= MAX_TEX) {
 			MAX_TEX *= 2;
 			modelTex->textures = sysMemRealloc(modelTex->textures, MAX_TEX * sizeof(struct ExtTexture));
 		}
+
+		setTex(modelTex->textures, modelTex->numTextures, texNum, extension);
+		modelTex->numTextures++;
 	}
 	closedir(dr);
 
@@ -287,11 +294,17 @@ void readModelTextures(const char *path, s16 fileNum, s32 *modelOffset, struct M
 
 void readFontTextures(const char *path, const char *fontName)
 {
+	u8 fontID = resolveFontID(fontName);
+	if (fontID >= NUM_FONTS) return;
+
 	DIR *dr = opendir(path);
 	struct dirent *de;
 
-	u8 fontID = resolveFontID(fontName);
-	if (fontID >= NUM_FONTS) return;
+	if (!dr) {
+		sysLogPrintf(LOG_WARNING, "Unable to open external font texture directory: %s\n", path);
+		return;
+	}
+
 	char extension[5] = { 0 };
 
 	char outlinesPath[FS_MAXPATH];
@@ -307,6 +320,7 @@ void readFontTextures(const char *path, const char *fontName)
 			outlines = true;
 			closedir(dr);
 			dr = opendir(outlinesPath);
+			if (!dr) break;
 			de = readdir(dr);
 
 			if (de == NULL) break;
@@ -327,7 +341,7 @@ void readFontTextures(const char *path, const char *fontName)
 			setTex(fontExtTextures[fontID], texNum, texNum, extension);
 	}
 
-	closedir(dr);
+	if (dr) closedir(dr);
 }
 
 void extTexFree()
@@ -391,6 +405,13 @@ s32 extTexInit()
 
 	s32 MAX_MODELS = 16;
 	numModels = 0;
+	modelTextures = NULL;
+
+	if (!dr) {
+		sysLogPrintf(LOG_WARNING, "External texture directory not found: %s\n", extTexPath);
+		return 0;
+	}
+
 	modelTextures = sysMemAlloc(MAX_MODELS * sizeof(struct ModelTextures));
 
 	while ((de = readdir(dr)) != NULL) {
@@ -415,14 +436,14 @@ s32 extTexInit()
 					continue;
 				}
 
+				// allocate more memory if necessary
+				if (numModels >= MAX_MODELS) {
+					MAX_MODELS *= 2;
+					modelTextures = sysMemRealloc(modelTextures, MAX_MODELS * sizeof(struct ModelTextures));
+				}
+
 				struct ModelTextures *modelTex = &modelTextures[numModels++];
 				readModelTextures(filepath, fileNum, &modelOffset, modelTex);
-
-				// allocate more memory if necessary
-				if (numModels > MAX_MODELS) {
-					MAX_MODELS *= 2;
-					modelTextures = sysMemRealloc(modelTextures, MAX_MODELS);
-				}
 
 			}
 			// fonts
