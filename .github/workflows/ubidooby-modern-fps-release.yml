@@ -38,6 +38,7 @@ jobs:
         run: |
           # Windows keeps user data next to the executable.
           mkdir -p UbiDooby-Modern-FPS-Windows-x64/data/ext_tex
+          cp docs/EXT_TEX_FOLDER_README.txt UbiDooby-Modern-FPS-Windows-x64/data/ext_tex/README.txt
           cp build/pd.x86_64.exe UbiDooby-Modern-FPS-Windows-x64/
           cp /mingw64/bin/{SDL2.dll,zlib1.dll,libwinpthread-1.dll,libgcc_s_seh-1.dll} UbiDooby-Modern-FPS-Windows-x64/
           cp docs/RELEASE-README.md UbiDooby-Modern-FPS-Windows-x64/README.md
@@ -62,6 +63,7 @@ jobs:
         run: |
           # Linux keeps user data next to the executable.
           mkdir -p UbiDooby-Modern-FPS-Linux-x64/data/ext_tex
+          cp docs/EXT_TEX_FOLDER_README.txt UbiDooby-Modern-FPS-Linux-x64/data/ext_tex/README.txt
           cp build/pd.x86_64 UbiDooby-Modern-FPS-Linux-x64/
           cp docs/RELEASE-README.md UbiDooby-Modern-FPS-Linux-x64/README.md
           tar cJf UbiDooby-Modern-FPS-Linux-x64.tar.xz UbiDooby-Modern-FPS-Linux-x64
