@@ -90,7 +90,9 @@ jobs:
           APP_DIR="$BUNDLE_DIR/Perfect Dark.app"
           mkdir -p "$APP_DIR/Contents/MacOS/data/ext_tex" "$APP_DIR/Contents/Frameworks" "$APP_DIR/Contents/Resources"
           cp build/pd.arm64 "$APP_DIR/Contents/MacOS/"
-          ditto /Library/Frameworks/SDL2.framework "$APP_DIR/Contents/Frameworks/SDL2.framework"
+          # cp -R preserves the framework's symbolic-link layout.  `ditto`
+          # dereferences it, which makes macOS consider the framework invalid.
+          cp -R /Library/Frameworks/SDL2.framework "$APP_DIR/Contents/Frameworks/"
           install_name_tool -add_rpath '@executable_path/../Frameworks' "$APP_DIR/Contents/MacOS/pd.arm64"
           cp README.md "$BUNDLE_DIR/README.md"
           cp README.md "$APP_DIR/Contents/Resources/README.md"
