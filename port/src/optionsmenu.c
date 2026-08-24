@@ -1962,6 +1962,19 @@ static MenuItemHandlerResult menuhandlerUbiDoobyLiveTargetReticle(s32 operation,
 	return 0;
 }
 
+static MenuItemHandlerResult menuhandlerUbiDoobyAutomaticTapFire(s32 operation, struct menuitem *item, union handlerdata *data)
+{
+	switch (operation) {
+	case MENUOP_GET:
+		return g_UbiDoobyAutomaticTapFireEnabled;
+	case MENUOP_SET:
+		g_UbiDoobyAutomaticTapFireEnabled = data->checkbox.value;
+		break;
+	}
+
+	return 0;
+}
+
 static MenuItemHandlerResult menuhandlerUbiDoobyModernAdsCombat(s32 operation, struct menuitem *item, union handlerdata *data)
 {
 	switch (operation) {
@@ -2135,6 +2148,30 @@ struct menuitem g_UbiDoobyCombatInfoMenuItems[] = {
 		MENUITEMTYPE_LABEL,
 		0,
 		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"- Rapid Automatic Tap-Fire:\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Removes the rate limit on quick\nsingle shots from automatic weapons.\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Full-auto fire is unchanged.\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
 		(uintptr_t)"- Modern ADS Combat:\n",
 		0,
 		NULL,
@@ -2191,6 +2228,14 @@ struct menuitem g_UbiDoobyCombatMenuItems[] = {
 		(uintptr_t)"Live Target Reticle\n",
 		0,
 		menuhandlerUbiDoobyLiveTargetReticle,
+	},
+	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Rapid Automatic Tap-Fire\n",
+		0,
+		menuhandlerUbiDoobyAutomaticTapFire,
 	},
 	{
 		MENUITEMTYPE_CHECKBOX,

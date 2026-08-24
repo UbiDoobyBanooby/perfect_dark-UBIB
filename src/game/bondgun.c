@@ -1893,6 +1893,7 @@ void bgun0f09a6f8(struct handweaponinfo *info, s32 handnum, struct hand *hand, s
 	if ((func->type & 0xff00) == 0x100) {
 		struct weaponfunc_shootauto *autofunc = (struct weaponfunc_shootauto *) func;
 		const bool ubibautotap = UBIB_ACTIVE
+			&& g_UbiDoobyAutomaticTapFireEnabled
 			&& hand->triggeron
 			&& (!hand->triggerprev || hand->triggerreleased);
 		f32 tmp;
@@ -2280,6 +2281,7 @@ bool bgunTickIncAttackingShoot(struct handweaponinfo *info, s32 handnum, struct 
 
 		if ((func->type & 0xff00) == (INVENTORYFUNCTYPE_SHOOT_AUTOMATIC & 0xff00)
 				&& UBIB_ACTIVE
+				&& g_UbiDoobyAutomaticTapFireEnabled
 				&& hand->triggeron
 				&& hand->triggerreleased) {
 			sp68 = true;
