@@ -5,6 +5,7 @@
 .DS_Store
 pd.*.z64
 build
+build-*/
 .flatpak-builder
 extracted
 src/assets/*/*.bin
