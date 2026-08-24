@@ -24,14 +24,29 @@ Rafccq's external-texture feature loads replacement PNG textures from `data/ext_
 
 ### Prebuilt Downloads
 
-Each update to this branch creates ready-to-run downloads for Apple-silicon Mac, 64-bit Windows, and 64-bit Linux. Get the newest files from the [latest UbiDooby Modern FPS release](https://github.com/UbiDoobyBanooby/perfect_dark-UBIB/releases/tag/ubidooby-modern-fps-latest). Choose the download for your operating system, then add your own ROM and texture pack as described above. Mac builds are not notarized, so macOS may require **Control-click → Open** the first time you launch them.
+Each update to this branch creates ready-to-run downloads for Apple-silicon Mac, 64-bit Windows, and 64-bit Linux. Get the newest files from the [latest UbiDooby Modern FPS release](https://github.com/UbiDoobyBanooby/perfect_dark-UBIB/releases/tag/ubidooby-modern-fps-latest).
 
-### Get and Build This Branch
+1. Download the file for your operating system and extract it.
+2. Put your own supported NTSC Final Perfect Dark ROM in the extracted folder's `data` directory. Name it exactly `pd.ntsc-final.z64`.
+3. To use a texture pack, copy its `ext_tex` folder into that same `data` directory, so the replacement PNG files end up in `data/ext_tex`.
+4. Start the game:
+   * **Windows:** open `pd.x86_64.exe`.
+   * **Linux:** run `./pd.x86_64` from a terminal in the extracted folder.
+   * **Apple-silicon Mac:** open `Run Perfect Dark.command`. The build is not notarized, so the first launch may require **Control-click → Open**.
+5. In the game, enable **External Textures** in **Extended Options → Video**.
 
-1. On the [UbiDooby Modern FPS Update + Rafccq External Texture Support branch page](https://github.com/UbiDoobyBanooby/perfect_dark-UBIB/tree/ubidooby-modern-fps-update-rafs-external-texture-support), click **Code**, then **Download ZIP**.
-2. Unzip the download and open the extracted folder.
-3. Follow the build instructions for [Windows](#windows), [Linux](#linux), or [MacOS](#macos) below. Start at the dependency-installation step and skip the “Get the source code” step, because the ZIP you downloaded is already this branch's source code.
-4. Supply your own supported Perfect Dark ROM as described in [Running](#running). To use external textures, put a compatible pack's `ext_tex` folder inside the finished build's `data` folder, then enable **External Textures** in **Extended Options → Video**.
+The downloads do not include a Perfect Dark ROM or any texture pack. You must provide assets you are entitled to use.
+
+### Build This Branch From Source
+
+Prebuilt downloads are recommended. If you want to compile the branch yourself, use Git so its required submodule is included:
+
+```sh
+git clone --recursive --branch ubidooby-modern-fps-update-rafs-external-texture-support https://github.com/UbiDoobyBanooby/perfect_dark-UBIB.git
+cd perfect_dark-UBIB
+```
+
+Then follow the build instructions for [Windows](#windows), [Linux](#linux), or [MacOS](#macos) below. Skip their “Get the source code” step, since the commands above already downloaded the correct branch. After building, add your ROM and optional `ext_tex` folder as described in [Prebuilt Downloads](#prebuilt-downloads).
 
 To run the port, you must already have a Perfect Dark ROM, specifically one of the following:
 * `ntsc-final`/`US V1.1`/`US Rev 1` (md5 `e03b088b6ac9e0080440efed07c1e40f`).  
@@ -75,7 +90,7 @@ There are minor graphics- and gameplay-related issues, and possibly occasional c
 ## Download
 
 > [!WARNING]
-> The downloads below are automatic builds of the original `fgsfdsfgs/perfect_dark` port. They do **not** include the UbiDooby Modern FPS Update or Rafccq external-texture support. To get this branch, use [Get and Build This Branch](#get-and-build-this-branch) above.
+> The downloads below are automatic builds of the original `fgsfdsfgs/perfect_dark` port. They do **not** include the UbiDooby Modern FPS Update or Rafccq external-texture support. Use the [Prebuilt Downloads](#prebuilt-downloads) above for this branch instead.
 
 Latest [automatic builds](https://github.com/fgsfdsfgs/perfect_dark/releases/tag/ci-dev-build) for supported platforms:
 * [x86_64-windows](https://github.com/fgsfdsfgs/perfect_dark/releases/download/ci-dev-build/pd-x86_64-windows.zip)
@@ -152,7 +167,7 @@ Controls can be rebound in `pd.ini`. Default control scheme is as follows:
 3. Install dependencies:  
    `pacman -S mingw-w64-x86_64-toolchain mingw-w64-x86_64-SDL2 mingw-w64-x86_64-zlib mingw-w64-x86_64-cmake mingw-w64-x86_64-python3 mingw-w64-i686-toolchain mingw-w64-i686-SDL2 mingw-w64-i686-zlib mingw-w64-i686-cmake mingw-w64-i686-python3 make git`
 4. Get the source code:  
-   `git clone --recursive https://github.com/fgsfdsfgs/perfect_dark.git && cd perfect_dark`
+   `git clone --recursive --branch ubidooby-modern-fps-update-rafs-external-texture-support https://github.com/UbiDoobyBanooby/perfect_dark-UBIB.git && cd perfect_dark-UBIB`
 5. Run `cmake -G"Unix Makefiles" -Bbuild .`.
    * Add ` -DROMID=pal-final` or ` -DROMID=jpn-final` at the end of the command if you want to build a PAL or JPN executable respectively.\
 6. Run `cmake --build build -j4 -- -O`.
@@ -164,7 +179,7 @@ Controls can be rebound in `pd.ini`. Default control scheme is as follows:
 1. Ensure you have gcc, g++ (version 10.0+), make, cmake, git, python3 and SDL2 (version 2.0.12+), libGL and ZLib installed on your system.
    * If you wish to crosscompile, you will also need to have libraries and compilers for the target platform installed, e.g. `gcc-multilib` and `g++-multilib` for x86_64 -> i686 crosscompilation.
 2. Get the source code:  
-   `git clone --recursive https://github.com/fgsfdsfgs/perfect_dark.git && cd perfect_dark`
+   `git clone --recursive --branch ubidooby-modern-fps-update-rafs-external-texture-support https://github.com/UbiDoobyBanooby/perfect_dark-UBIB.git && cd perfect_dark-UBIB`
 3. Run the following command:
    * ```cmake -G"Unix Makefiles" -Bbuild .```
    * Add ` -DROMID=pal-final` or ` -DROMID=jpn-final` at the end of the command if you want to build a PAL or JPN executable respectively.
@@ -188,7 +203,7 @@ Controls can be rebound in `pd.ini`. Default control scheme is as follows:
    * This installs SDL2 system-wide and this is how the automatic builds are done. The game will also look for it in the executable path, so you could
      download it locally instead.
 4. Get the source code:  
-   `git clone --recursive https://github.com/fgsfdsfgs/perfect_dark.git && cd perfect_dark`
+   `git clone --recursive --branch ubidooby-modern-fps-update-rafs-external-texture-support https://github.com/UbiDoobyBanooby/perfect_dark-UBIB.git && cd perfect_dark-UBIB`
 5. Configure:
    * Execute command: `cmake -G"Unix Makefiles" -Bbuild -DCMAKE_OSX_ARCHITECTURES=x86_64 .`
    * Replace `x86_64` with `arm64` if building for an ARM64 Mac.
@@ -214,7 +229,7 @@ Controls can be rebound in `pd.ini`. Default control scheme is as follows:
      ```
    * If in MSYS2 or `dkp-pacman` doesn't work, replace it with just `pacman`.
 4. Get the source code:  
-   `git clone --recursive https://github.com/fgsfdsfgs/perfect_dark.git && cd perfect_dark`
+   `git clone --recursive --branch ubidooby-modern-fps-update-rafs-external-texture-support https://github.com/UbiDoobyBanooby/perfect_dark-UBIB.git && cd perfect_dark-UBIB`
 5. Ensure devkitA64 environment variables are set:
    * Execute command: `source /opt/devkitpro/switchvars.sh`
    * If your `$DEVKITPRO` path is different, substitute that instead or set the variables manually.
