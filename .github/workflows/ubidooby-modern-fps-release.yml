@@ -36,10 +36,11 @@ jobs:
         run: cmake -G"Unix Makefiles" -Bbuild . && cmake --build build -j
       - name: Package download
         run: |
+          # Windows keeps user data next to the executable.
           mkdir -p UbiDooby-Modern-FPS-Windows-x64/data/ext_tex
           cp build/pd.x86_64.exe UbiDooby-Modern-FPS-Windows-x64/
           cp /mingw64/bin/{SDL2.dll,zlib1.dll,libwinpthread-1.dll,libgcc_s_seh-1.dll} UbiDooby-Modern-FPS-Windows-x64/
-          cp README.md UbiDooby-Modern-FPS-Windows-x64/
+          cp docs/RELEASE-README.md UbiDooby-Modern-FPS-Windows-x64/README.md
       - name: Upload Windows bundle
         uses: actions/upload-artifact@v4
         with:
@@ -59,9 +60,10 @@ jobs:
         run: cmake -G"Unix Makefiles" -Bbuild . && cmake --build build -j
       - name: Package download
         run: |
+          # Linux keeps user data next to the executable.
           mkdir -p UbiDooby-Modern-FPS-Linux-x64/data/ext_tex
           cp build/pd.x86_64 UbiDooby-Modern-FPS-Linux-x64/
-          cp README.md UbiDooby-Modern-FPS-Linux-x64/
+          cp docs/RELEASE-README.md UbiDooby-Modern-FPS-Linux-x64/README.md
           tar cJf UbiDooby-Modern-FPS-Linux-x64.tar.xz UbiDooby-Modern-FPS-Linux-x64
       - name: Upload Linux bundle
         uses: actions/upload-artifact@v4
@@ -89,7 +91,9 @@ jobs:
           BUNDLE_DIR='UbiDooby-Modern-FPS-macOS-Apple-Silicon'
           APP_DIR="$BUNDLE_DIR/Perfect Dark.app"
           SDL_FRAMEWORK="$APP_DIR/Contents/Frameworks/SDL2.framework"
-          mkdir -p "$APP_DIR/Contents/MacOS" "$SDL_FRAMEWORK/Versions" "$APP_DIR/Contents/Resources"
+          # macOS keeps user data outside the signed app bundle. The launcher
+          # creates ~/Library/Application Support/perfectdark/data/ext_tex.
+          mkdir -p "$APP_DIR/Contents/MacOS" "$SDL_FRAMEWORK/Versions"
           clang -fobjc-arc -arch arm64 -mmacosx-version-min=11.0 .github/scripts/macos-app-launcher.m -framework Cocoa -o "$APP_DIR/Contents/MacOS/Perfect Dark"
           install_name_tool -add_rpath '@executable_path/../Frameworks' build/pd.arm64
           codesign --force --sign - build/pd.arm64
@@ -99,8 +103,7 @@ jobs:
           ln -s Versions/Current/SDL2 "$SDL_FRAMEWORK/SDL2"
           ln -s Versions/Current/Headers "$SDL_FRAMEWORK/Headers"
           ln -s Versions/Current/Resources "$SDL_FRAMEWORK/Resources"
-          cp README.md "$BUNDLE_DIR/README.md"
-          cp README.md "$APP_DIR/Contents/Resources/README.md"
+          cp docs/RELEASE-README.md "$BUNDLE_DIR/README.md"
           printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>' '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' '<plist version="1.0"><dict><key>CFBundleExecutable</key><string>Perfect Dark</string><key>CFBundleIdentifier</key><string>com.ubidoobybanooby.perfectdark</string><key>CFBundleName</key><string>Perfect Dark</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleShortVersionString</key><string>Modern FPS Update</string><key>LSMinimumSystemVersion</key><string>11.0</string></dict></plist>' > "$APP_DIR/Contents/Info.plist"
           codesign --force --sign - "$SDL_FRAMEWORK"
           codesign --force --sign - "$APP_DIR"
