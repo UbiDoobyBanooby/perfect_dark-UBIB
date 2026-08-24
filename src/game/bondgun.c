@@ -1892,6 +1892,9 @@ void bgun0f09a6f8(struct handweaponinfo *info, s32 handnum, struct hand *hand, s
 
 	if ((func->type & 0xff00) == 0x100) {
 		struct weaponfunc_shootauto *autofunc = (struct weaponfunc_shootauto *) func;
+		const bool ubibautotap = UBIB_ACTIVE
+			&& hand->triggeron
+			&& (!hand->triggerprev || hand->triggerreleased);
 		f32 tmp;
 		f32 tmp2;
 
@@ -1902,8 +1905,12 @@ void bgun0f09a6f8(struct handweaponinfo *info, s32 handnum, struct hand *hand, s
 		hand->shotremainder = tmp2 - hand->shotstotake;
 
 		if (hand->shotstotake <= 0) {
-			if ((hand->stateflags & HANDSTATEFLAG_00000010) == 0) {
+			if ((hand->stateflags & HANDSTATEFLAG_00000010) == 0 || ubibautotap) {
 				hand->shotstotake++;
+
+				if (ubibautotap) {
+					hand->triggerreleased = false;
+				}
 			} else {
 				hand->firing = false;
 			}
@@ -2269,6 +2276,13 @@ bool bgunTickIncAttackingShoot(struct handweaponinfo *info, s32 handnum, struct 
 
 		if (hand->gset.weaponnum == WEAPON_SHOTGUN && hand->animmode == HANDANIMMODE_BUSY) {
 			sp68 = false;
+		}
+
+		if ((func->type & 0xff00) == (INVENTORYFUNCTYPE_SHOOT_AUTOMATIC & 0xff00)
+				&& UBIB_ACTIVE
+				&& hand->triggeron
+				&& hand->triggerreleased) {
+			sp68 = true;
 		}
 
 		hand->matmot2 = hand->gs_float1;
