@@ -2,6 +2,26 @@
 
 This repository contains a work-in-progress port of the [Perfect Dark decompilation](https://github.com/n64decomp/perfect_dark) to modern platforms.
 
+## UbiDooby Modern FPS Update + Rafccq External Texture Support
+
+This branch combines UbiDoobyBanooby's modern gameplay options with Rafccq's external PNG texture-loading feature.
+
+### Movement
+
+* **ADS Move While Aiming** — Move while aiming down sights; the mouse wheel controls ADS zoom.
+* **Modern Movement** — Weapon weight changes movement speed: light weapons are fastest, medium weapons are balanced, and heavy weapons are slower. Sprint, walk, and ADS speed scale by weapon class.
+* **Weapon Wheel-Hold** — Choose whether the weapon wheel uses hold or toggle behavior. With Modern Movement enabled, you can move while the wheel is open.
+
+### Combat
+
+* **Live Target Reticle** — Red reticle feedback and the target sound react only to living enemies; dead or dying enemies no longer trigger the reaction.
+* **Rapid Automatic Tap-Fire** — Removes the rate limit on quick single shots from automatic weapons. Full-auto fire is unchanged.
+* **Modern ADS Combat** — Non-zoom weapons gain 1.25x zoom while aiming, while hipfire accuracy is reduced by 25 percent.
+
+### External Textures
+
+Rafccq's external-texture feature loads replacement PNG textures from `data/ext_tex` when **External Textures** is enabled in **Extended Options → Video**. This repository does not include a Perfect Dark ROM or any texture pack; users must supply assets they are entitled to use.
+
 To run the port, you must already have a Perfect Dark ROM, specifically one of the following:
 * `ntsc-final`/`US V1.1`/`US Rev 1` (md5 `e03b088b6ac9e0080440efed07c1e40f`).  
   **This is the recommended version to use**.  
