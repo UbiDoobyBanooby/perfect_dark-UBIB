@@ -34,10 +34,14 @@ Every download includes a copy of this README.
 4. Start the game:
    * **Windows:** open `pd.x86_64.exe`.
    * **Linux:** run `./pd.x86_64` from a terminal in the extracted folder.
-   * **Apple-silicon Mac:** open `Run Perfect Dark.command`. The build is not notarized, so the first launch may require **Control-click → Open**.
+   * **Apple-silicon Mac:** open `Perfect Dark.app`. The build is not notarized, so the first launch may require **Control-click → Open** or **System Settings → Privacy & Security → Open Anyway**.
 5. In the game, enable **External Textures** in **Extended Options → Video**.
 
 The downloads do not include a Perfect Dark ROM or any texture pack. You must provide assets you are entitled to use.
+
+#### Apple-silicon Mac: Add Your ROM and Texture Pack
+
+Control-click `Perfect Dark.app`, choose **Show Package Contents**, then open `Contents/MacOS/data`. Put your ROM there and name it `pd.ntsc-final.z64`. Put an optional texture pack's `ext_tex` folder in that same `data` folder. A copy of this README is also beside the app in the extracted download.
 
 ### Build This Branch From Source
 
