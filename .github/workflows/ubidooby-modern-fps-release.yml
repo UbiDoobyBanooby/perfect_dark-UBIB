@@ -89,8 +89,8 @@ jobs:
           BUNDLE_DIR='UbiDooby-Modern-FPS-macOS-Apple-Silicon'
           APP_DIR="$BUNDLE_DIR/Perfect Dark.app"
           SDL_FRAMEWORK="$APP_DIR/Contents/Frameworks/SDL2.framework"
-          mkdir -p "$BUNDLE_DIR/data/ext_tex" "$APP_DIR/Contents/MacOS" "$SDL_FRAMEWORK/Versions" "$APP_DIR/Contents/Resources"
-          clang -arch arm64 -mmacosx-version-min=11.0 .github/scripts/macos-app-launcher.c -o "$APP_DIR/Contents/MacOS/Perfect Dark"
+          mkdir -p "$APP_DIR/Contents/MacOS" "$SDL_FRAMEWORK/Versions" "$APP_DIR/Contents/Resources"
+          clang -fobjc-arc -arch arm64 -mmacosx-version-min=11.0 .github/scripts/macos-app-launcher.m -framework Cocoa -o "$APP_DIR/Contents/MacOS/Perfect Dark"
           install_name_tool -add_rpath '@executable_path/../Frameworks' build/pd.arm64
           codesign --force --sign - build/pd.arm64
           cp build/pd.arm64 "$APP_DIR/Contents/MacOS/"

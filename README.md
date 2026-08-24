@@ -29,8 +29,10 @@ Each update to this branch creates ready-to-run downloads for Apple-silicon Mac,
 Every download includes a copy of this README.
 
 1. Download the file for your operating system and extract it.
-2. Put your own supported NTSC Final Perfect Dark ROM in the extracted folder's `data` directory. Name it exactly `pd.ntsc-final.z64`.
-3. To use a texture pack, copy its `ext_tex` folder into that same `data` directory, so the replacement PNG files end up in `data/ext_tex`.
+2. Set up your ROM:
+   * **Windows and Linux:** put your own supported NTSC Final Perfect Dark ROM in the extracted folder's `data` directory. Name it exactly `pd.ntsc-final.z64`.
+   * **Apple-silicon Mac:** open `Perfect Dark.app` and use the first-run ROM chooser. The app copies your selected ROM to its stable macOS data folder automatically.
+3. To use a texture pack, copy its `ext_tex` folder into the game's `data` directory. See the Mac-specific directions below for that location.
 4. Start the game:
    * **Windows:** open `pd.x86_64.exe`.
    * **Linux:** run `./pd.x86_64` from a terminal in the extracted folder.
@@ -41,7 +43,9 @@ The downloads do not include a Perfect Dark ROM or any texture pack. You must pr
 
 #### Apple-silicon Mac: Add Your ROM and Texture Pack
 
-Open the `data` folder beside `Perfect Dark.app`. Put your ROM there and name it `pd.ntsc-final.z64`. Put an optional texture pack's `ext_tex` folder in that same `data` folder. Do not add files inside `Perfect Dark.app`; changing the signed app bundle will make macOS report that it is damaged. A copy of this README is also beside the app in the extracted download.
+On the first launch, `Perfect Dark.app` asks you to choose your legally obtained NTSC Final ROM and copies it to the correct location automatically. When the ROM is installed, choose **Open Data Folder and Quit** if you want to add a texture pack, then place the pack's `ext_tex` folder there and reopen the app.
+
+To open the folder later, choose **Go → Go to Folder…** in Finder and enter `~/Library/Application Support/perfectdark/data`. Do not add files inside `Perfect Dark.app`; changing the signed app bundle will make macOS report that it is damaged. A copy of this README is beside the app in the extracted download.
 
 ### Build This Branch From Source
 
