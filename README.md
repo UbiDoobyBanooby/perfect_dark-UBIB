@@ -201,6 +201,7 @@ It might be possible to build and run the game on platforms that are not specifi
 
 ## Credits
 
+* [rafccq](https://github.com/rafccq) for the external PNG texture-loading feature used by this combo branch;
 * the original [decompilation project](https://github.com/n64decomp/perfect_dark) authors;
 * Ryan Dwyer for the above, additional help, and `pd-extract`;
 * doomhack for the only other publicly available [PD porting effort](https://github.com/doomhack/perfect_dark) I could find;
