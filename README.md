@@ -22,6 +22,10 @@ This branch combines UbiDoobyBanooby's modern gameplay options with Rafccq's ext
 
 Rafccq's external-texture feature loads replacement PNG textures from `data/ext_tex` when **External Textures** is enabled in **Extended Options → Video**. This repository does not include a Perfect Dark ROM or any texture pack; users must supply assets they are entitled to use.
 
+### Prebuilt Downloads
+
+Each update to this branch creates ready-to-run downloads for Apple-silicon Mac, 64-bit Windows, and 64-bit Linux. Get the newest files from the [latest UbiDooby Modern FPS release](https://github.com/UbiDoobyBanooby/perfect_dark-UBIB/releases/tag/ubidooby-modern-fps-latest). Choose the download for your operating system, then add your own ROM and texture pack as described above. Mac builds are not notarized, so macOS may require **Control-click → Open** the first time you launch them.
+
 ### Get and Build This Branch
 
 1. On the [UbiDooby Modern FPS Update + Rafccq External Texture Support branch page](https://github.com/UbiDoobyBanooby/perfect_dark-UBIB/tree/ubidooby-modern-fps-update-rafs-external-texture-support), click **Code**, then **Download ZIP**.

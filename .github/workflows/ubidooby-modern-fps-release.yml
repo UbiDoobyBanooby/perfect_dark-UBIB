@@ -1,0 +1,141 @@
+name: Build UbiDooby Modern FPS Update
+
+on:
+  push:
+    branches:
+      - ubidooby-modern-fps-update-rafs-external-texture-support
+  workflow_dispatch:
+
+concurrency:
+  group: ubidooby-modern-fps-release
+  cancel-in-progress: false
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-cmake
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Build 64-bit Windows executable
+        run: cmake -G"Unix Makefiles" -Bbuild . && cmake --build build -j
+      - name: Package download
+        run: |
+          mkdir -p UbiDooby-Modern-FPS-Windows-x64/data/ext_tex
+          cp build/pd.x86_64.exe UbiDooby-Modern-FPS-Windows-x64/
+          cp /mingw64/bin/{SDL2.dll,zlib1.dll,libwinpthread-1.dll,libgcc_s_seh-1.dll} UbiDooby-Modern-FPS-Windows-x64/
+          touch UbiDooby-Modern-FPS-Windows-x64/data/put_your_pd.ntsc-final.z64_here.txt
+          touch UbiDooby-Modern-FPS-Windows-x64/data/ext_tex/put_your_texture_pack_here.txt
+      - name: Upload Windows bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: UbiDooby-Modern-FPS-Windows-x64
+          path: UbiDooby-Modern-FPS-Windows-x64/
+
+  build-linux-x64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git gcc g++ make libsdl2-dev zlib1g-dev libsdl2-2.0-0 cmake
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Build 64-bit Linux executable
+        run: cmake -G"Unix Makefiles" -Bbuild . && cmake --build build -j
+      - name: Package download
+        run: |
+          mkdir -p UbiDooby-Modern-FPS-Linux-x64/data/ext_tex
+          cp build/pd.x86_64 UbiDooby-Modern-FPS-Linux-x64/
+          touch UbiDooby-Modern-FPS-Linux-x64/data/put_your_pd.ntsc-final.z64_here.txt
+          touch UbiDooby-Modern-FPS-Linux-x64/data/ext_tex/put_your_texture_pack_here.txt
+      - name: Upload Linux bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: UbiDooby-Modern-FPS-Linux-x64
+          path: UbiDooby-Modern-FPS-Linux-x64/
+
+  build-macos-arm64:
+    runs-on: macos-14
+    steps:
+      - name: Install dependencies
+        run: |
+          brew install zlib
+          wget http://libsdl.org/release/SDL2-2.30.9.dmg -O SDL2.dmg
+          hdiutil mount SDL2.dmg
+          sudo cp -vr /Volumes/SDL2/SDL2.framework /Library/Frameworks
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Build Apple-silicon Mac executable
+        run: |
+          cmake -G"Unix Makefiles" -Bbuild -DCMAKE_OSX_ARCHITECTURES=arm64 .
+          cmake --build build --target pd -j4 --clean-first
+      - name: Package download
+        run: |
+          mkdir -p UbiDooby-Modern-FPS-macOS-Apple-Silicon/data/ext_tex
+          cp build/pd.arm64 UbiDooby-Modern-FPS-macOS-Apple-Silicon/
+          cp -R /Library/Frameworks/SDL2.framework UbiDooby-Modern-FPS-macOS-Apple-Silicon/
+          printf '#!/bin/zsh\ncd "$(dirname "$0")"\nexec ./pd.arm64 --portable\n' > UbiDooby-Modern-FPS-macOS-Apple-Silicon/Run\ Perfect\ Dark.command
+          chmod +x UbiDooby-Modern-FPS-macOS-Apple-Silicon/Run\ Perfect\ Dark.command
+          touch UbiDooby-Modern-FPS-macOS-Apple-Silicon/data/put_your_pd.ntsc-final.z64_here.txt
+          touch UbiDooby-Modern-FPS-macOS-Apple-Silicon/data/ext_tex/put_your_texture_pack_here.txt
+      - name: Upload Mac bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: UbiDooby-Modern-FPS-macOS-Apple-Silicon
+          path: UbiDooby-Modern-FPS-macOS-Apple-Silicon/
+
+  publish-release:
+    needs: [build-windows-x64, build-linux-x64, build-macos-arm64]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Download Windows bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: UbiDooby-Modern-FPS-Windows-x64
+          path: release-files/UbiDooby-Modern-FPS-Windows-x64
+      - name: Download Linux bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: UbiDooby-Modern-FPS-Linux-x64
+          path: release-files/UbiDooby-Modern-FPS-Linux-x64
+      - name: Download Mac bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: UbiDooby-Modern-FPS-macOS-Apple-Silicon
+          path: release-files/UbiDooby-Modern-FPS-macOS-Apple-Silicon
+      - name: Create release files
+        run: |
+          mkdir release
+          cd release-files
+          zip -r ../release/UbiDooby-Modern-FPS-Windows-x64.zip UbiDooby-Modern-FPS-Windows-x64
+          tar cJf ../release/UbiDooby-Modern-FPS-Linux-x64.tar.xz UbiDooby-Modern-FPS-Linux-x64
+          zip -r ../release/UbiDooby-Modern-FPS-macOS-Apple-Silicon.zip UbiDooby-Modern-FPS-macOS-Apple-Silicon
+      - name: Publish latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ubidooby-modern-fps-latest
+        run: |
+          git tag --force "$TAG" "$GITHUB_SHA"
+          git push --force origin "refs/tags/$TAG"
+          gh release view "$TAG" || gh release create "$TAG" --title "UbiDooby Modern FPS Update + Rafccq External Texture Support" --notes "Latest automated desktop builds for the UbiDooby Modern FPS Update + Rafccq External Texture Support branch. ROMs and texture packs are not included."
+          gh release upload "$TAG" release/* --clobber
