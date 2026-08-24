@@ -2007,12 +2007,6 @@ struct menuitem g_UbiDoobyAdsInfoMenuItems[] = {
 	UBIB_INFO_LABEL("Toggle or Hold behavior."),
 	UBIB_INFO_LABEL("Modern Movement lets you"),
 	UBIB_INFO_LABEL("move while the wheel is open."),
-	UBIB_INFO_LABEL(" "),
-	UBIB_INFO_LABEL("- Modern ADS Combat:"),
-	UBIB_INFO_LABEL("Non-zoom guns gain 1.25x"),
-	UBIB_INFO_LABEL("zoom while aiming."),
-	UBIB_INFO_LABEL("Hipfire accuracy is reduced"),
-	UBIB_INFO_LABEL("by 25 percent."),
 	{
 		MENUITEMTYPE_SEPARATOR,
 		0,
@@ -2077,14 +2071,6 @@ struct menuitem g_UbiDoobyAdsMenuItems[] = {
 		menuhandlerUbiDoobyWeaponWheelHold,
 	},
 	{
-		MENUITEMTYPE_CHECKBOX,
-		0,
-		MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"Modern ADS Combat\n",
-		0,
-		menuhandlerUbiDoobyModernAdsCombat,
-	},
-	{
 		MENUITEMTYPE_SELECTABLE,
 		0,
 		MENUITEMFLAG_SELECTABLE_OPENSDIALOG | MENUITEMFLAG_LITERAL_TEXT,
@@ -2120,7 +2106,7 @@ struct menudialogdef g_UbiDoobyAdsMenuDialog = {
 	NULL,
 };
 
-struct menuitem g_UbiDoobyUndecidedInfoMenuItems[] = {
+struct menuitem g_UbiDoobyCombatInfoMenuItems[] = {
 	{
 		MENUITEMTYPE_LABEL,
 		0,
@@ -2146,6 +2132,30 @@ struct menuitem g_UbiDoobyUndecidedInfoMenuItems[] = {
 		NULL,
 	},
 	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"- Modern ADS Combat:\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Non-zoom guns gain 1.25x\nzoom while aiming.\n",
+		0,
+		NULL,
+	},
+	{
+		MENUITEMTYPE_LABEL,
+		0,
+		MENUITEMFLAG_SMALLFONT | MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Hipfire accuracy is reduced\nby 25 percent.\n",
+		0,
+		NULL,
+	},
+	{
 		MENUITEMTYPE_SEPARATOR,
 		0,
 		0,
@@ -2164,16 +2174,16 @@ struct menuitem g_UbiDoobyUndecidedInfoMenuItems[] = {
 	{ MENUITEMTYPE_END },
 };
 
-struct menudialogdef g_UbiDoobyUndecidedInfoMenuDialog = {
+struct menudialogdef g_UbiDoobyCombatInfoMenuDialog = {
 	MENUDIALOGTYPE_DEFAULT,
-	(uintptr_t)"Undecided Info",
-	g_UbiDoobyUndecidedInfoMenuItems,
+	(uintptr_t)"Combat Info",
+	g_UbiDoobyCombatInfoMenuItems,
 	NULL,
 	MENUDIALOGFLAG_LITERAL_TEXT | MENUDIALOGFLAG_SMOOTHSCROLLABLE,
 	NULL,
 };
 
-struct menuitem g_UbiDoobyUndecidedMenuItems[] = {
+struct menuitem g_UbiDoobyCombatMenuItems[] = {
 	{
 		MENUITEMTYPE_CHECKBOX,
 		0,
@@ -2183,12 +2193,20 @@ struct menuitem g_UbiDoobyUndecidedMenuItems[] = {
 		menuhandlerUbiDoobyLiveTargetReticle,
 	},
 	{
+		MENUITEMTYPE_CHECKBOX,
+		0,
+		MENUITEMFLAG_LITERAL_TEXT,
+		(uintptr_t)"Modern ADS Combat\n",
+		0,
+		menuhandlerUbiDoobyModernAdsCombat,
+	},
+	{
 		MENUITEMTYPE_SELECTABLE,
 		0,
 		MENUITEMFLAG_SELECTABLE_OPENSDIALOG | MENUITEMFLAG_LITERAL_TEXT,
 		(uintptr_t)"Info\n",
 		0,
-		(void *)&g_UbiDoobyUndecidedInfoMenuDialog,
+		(void *)&g_UbiDoobyCombatInfoMenuDialog,
 	},
 	{
 		MENUITEMTYPE_SEPARATOR,
@@ -2209,10 +2227,10 @@ struct menuitem g_UbiDoobyUndecidedMenuItems[] = {
 	{ MENUITEMTYPE_END },
 };
 
-struct menudialogdef g_UbiDoobyUndecidedMenuDialog = {
+struct menudialogdef g_UbiDoobyCombatMenuDialog = {
 	MENUDIALOGTYPE_DEFAULT,
-	(uintptr_t)"Undecided",
-	g_UbiDoobyUndecidedMenuItems,
+	(uintptr_t)"Combat",
+	g_UbiDoobyCombatMenuItems,
 	NULL,
 	MENUDIALOGFLAG_LITERAL_TEXT | MENUDIALOGFLAG_SMOOTHSCROLLABLE,
 	NULL,
@@ -2292,9 +2310,9 @@ struct menuitem g_UbiDoobyMenuItems[] = {
 		MENUITEMTYPE_SELECTABLE,
 		0,
 		MENUITEMFLAG_SELECTABLE_OPENSDIALOG | MENUITEMFLAG_LITERAL_TEXT,
-		(uintptr_t)"Undecided\n",
+		(uintptr_t)"Combat\n",
 		0,
-		(void *)&g_UbiDoobyUndecidedMenuDialog,
+		(void *)&g_UbiDoobyCombatMenuDialog,
 	},
 	{
 		MENUITEMTYPE_SEPARATOR,
