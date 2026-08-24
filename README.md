@@ -22,6 +22,13 @@ This branch combines UbiDoobyBanooby's modern gameplay options with Rafccq's ext
 
 Rafccq's external-texture feature loads replacement PNG textures from `data/ext_tex` when **External Textures** is enabled in **Extended Options → Video**. This repository does not include a Perfect Dark ROM or any texture pack; users must supply assets they are entitled to use.
 
+### Get and Build This Branch
+
+1. On the [UbiDooby Modern FPS Update + Rafccq External Texture Support branch page](https://github.com/UbiDoobyBanooby/perfect_dark-UBIB/tree/ubidooby-modern-fps-update-rafs-external-texture-support), click **Code**, then **Download ZIP**.
+2. Unzip the download and open the extracted folder.
+3. Follow the build instructions for [Windows](#windows), [Linux](#linux), or [MacOS](#macos) below. Start at the dependency-installation step and skip the “Get the source code” step, because the ZIP you downloaded is already this branch's source code.
+4. Supply your own supported Perfect Dark ROM as described in [Running](#running). To use external textures, put a compatible pack's `ext_tex` folder inside the finished build's `data` folder, then enable **External Textures** in **Extended Options → Video**.
+
 To run the port, you must already have a Perfect Dark ROM, specifically one of the following:
 * `ntsc-final`/`US V1.1`/`US Rev 1` (md5 `e03b088b6ac9e0080440efed07c1e40f`).  
   **This is the recommended version to use**.  
@@ -62,6 +69,9 @@ There are minor graphics- and gameplay-related issues, and possibly occasional c
 * Nintendo Switch: arm64
 
 ## Download
+
+> [!WARNING]
+> The downloads below are automatic builds of the original `fgsfdsfgs/perfect_dark` port. They do **not** include the UbiDooby Modern FPS Update or Rafccq external-texture support. To get this branch, use [Get and Build This Branch](#get-and-build-this-branch) above.
 
 Latest [automatic builds](https://github.com/fgsfdsfgs/perfect_dark/releases/tag/ci-dev-build) for supported platforms:
 * [x86_64-windows](https://github.com/fgsfdsfgs/perfect_dark/releases/download/ci-dev-build/pd-x86_64-windows.zip)
