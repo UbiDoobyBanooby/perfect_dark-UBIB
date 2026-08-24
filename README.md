@@ -41,7 +41,7 @@ The downloads do not include a Perfect Dark ROM or any texture pack. You must pr
 
 #### Apple-silicon Mac: Add Your ROM and Texture Pack
 
-Control-click `Perfect Dark.app`, choose **Show Package Contents**, then open `Contents/MacOS/data`. Put your ROM there and name it `pd.ntsc-final.z64`. Put an optional texture pack's `ext_tex` folder in that same `data` folder. A copy of this README is also beside the app in the extracted download.
+Open the `data` folder beside `Perfect Dark.app`. Put your ROM there and name it `pd.ntsc-final.z64`. Put an optional texture pack's `ext_tex` folder in that same `data` folder. Do not add files inside `Perfect Dark.app`; changing the signed app bundle will make macOS report that it is damaged. A copy of this README is also beside the app in the extracted download.
 
 ### Build This Branch From Source
 
