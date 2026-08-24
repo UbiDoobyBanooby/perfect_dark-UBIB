@@ -59,19 +59,26 @@ static struct ExtTexture fontOutlineExtTextures[NUM_FONTS][NCHARS];
 
 s32 fileInfo(const char *filename, s32 *texNum, char extension[5])
 {
-	char *ext = strrchr(filename, '.');
+	const char *ext = strrchr(filename, '.');
 
 	// no extension
-	if (!ext) return 1;
+	if (!ext || ext == filename || !ext[1]) return 1;
 
-	++ext;
-	strncpy(extension, ext, 5);
+	const size_t extensionLength = strlen(ext + 1);
+	if (extensionLength >= 5) return 1;
 
 	// get the filename without extension
 	char basename[16] = { 0 };
-	memcpy(basename, filename, strlen(filename) - strlen(ext) - 1);
+	const size_t basenameLength = (size_t)(ext - filename);
+	if (basenameLength >= sizeof(basename)) return 1;
+	memcpy(basename, filename, basenameLength);
 
-	*texNum = strtol(basename, NULL, 16);
+	char *end;
+	const long parsedTexNum = strtol(basename, &end, 16);
+	if (end == basename || *end != '\0' || parsedTexNum < 0) return 1;
+
+	*texNum = (s32)parsedTexNum;
+	memcpy(extension, ext + 1, extensionLength + 1);
 
 	return 0;
 }
@@ -284,6 +291,7 @@ void readFontTextures(const char *path, const char *fontName)
 	struct dirent *de;
 
 	u8 fontID = resolveFontID(fontName);
+	if (fontID >= NUM_FONTS) return;
 	char extension[5] = { 0 };
 
 	char outlinesPath[FS_MAXPATH];
@@ -311,6 +319,7 @@ void readFontTextures(const char *path, const char *fontName)
 		s32 err = fileInfo(name, &texNum, extension);
 		// no extension: skip
 		if (err) continue;
+		if (texNum >= NCHARS) continue;
 
 		if (outlines)
 			setTex(fontOutlineExtTextures[fontID], texNum, texNum, extension);
@@ -427,6 +436,7 @@ s32 extTexInit()
 
 			// no extension: skip
 			if (err) continue;
+			if (texNum >= MAX_EXT_TEX) continue;
 
 			setTex(extTextures, texNum, texNum, extension);
 		}

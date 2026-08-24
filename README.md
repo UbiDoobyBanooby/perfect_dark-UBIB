@@ -26,6 +26,8 @@ Rafccq's external-texture feature loads replacement PNG textures from `data/ext_
 
 Each update to this branch creates ready-to-run downloads for Apple-silicon Mac, 64-bit Windows, and 64-bit Linux. Get the newest files from the [latest UbiDooby Modern FPS release](https://github.com/UbiDoobyBanooby/perfect_dark-UBIB/releases/tag/ubidooby-modern-fps-latest).
 
+Every download includes a copy of this README.
+
 1. Download the file for your operating system and extract it.
 2. Put your own supported NTSC Final Perfect Dark ROM in the extracted folder's `data` directory. Name it exactly `pd.ntsc-final.z64`.
 3. To use a texture pack, copy its `ext_tex` folder into that same `data` directory, so the replacement PNG files end up in `data/ext_tex`.
